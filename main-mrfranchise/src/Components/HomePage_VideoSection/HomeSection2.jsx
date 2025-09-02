@@ -18,11 +18,15 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchTopCafes  } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
+import { homeSection2, toggleHomeCardLike  } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
 
 import LoginPage from "../../Pages/LoginPage/LoginPage";
 import { motion } from "framer-motion";
 import HomePageBrandCard from "./HomePageBrandCard.jsx";
+import { token } from "../../Utils/autherId.jsx";
+import { toggleBrandLike } from "../../Redux/Slices/GetAllBrandsDataUpdationFile.jsx";
+import { likeApiFunction } from "../../Api/likeApi.jsx";
+import { openBrandDialog } from "../../Redux/Slices/OpenBrandNewPageSlice.jsx";
 
 // Breakpoints
 const CARD_DIMENSIONS = {
@@ -33,13 +37,20 @@ const CARD_DIMENSIONS = {
   largeDesktop: { width: 327, height: 500 },
 };
 
-const TopCafeFranchises = () => {
+const HomeSection2 = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
-  
+const homeSection2State  = useSelector((state) => state.overAllPlatform.homeSection2);
 
+const {
+  brands = [],
+  isLoading,
+  error,
+  pagination
+} = homeSection2State  || {};
 
+// console.log("beveragesFranchiseState",beveragesFranchiseState);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isSmallDesktop = useMediaQuery(theme.breakpoints.between("md", "lg"));
@@ -56,6 +67,14 @@ const TopCafeFranchises = () => {
   const [showEndShadow, setShowEndShadow] = useState(true);
   const [visibleCardCount, setVisibleCardCount] = useState(4);
 
+  // const coffeeTeaBrands = useMemo(() => {
+  //   if (!filteredData?.length) return [];
+  //   return filteredData.filter((brand) => {
+  //     const category = brand?.franchiseDetails?.brandCategories?.main || "";
+  //     return category.includes("Food & Beverages");
+  //   });
+  // }, [filteredData]);
+
   const dimensions = useMemo(() => {
     if (isMobile) return CARD_DIMENSIONS.mobile;
     if (isTablet) return CARD_DIMENSIONS.tablet;
@@ -64,17 +83,9 @@ const TopCafeFranchises = () => {
     return CARD_DIMENSIONS.largeDesktop;
   }, [isMobile, isTablet, isSmallDesktop, isDesktop, isLargeDesktop]);
 
-  const cafeFranchiseState = useSelector((state) => state.foodfranchise.cafes);
-const {
-  brands = [],
-  isLoading,
-  error,
-  pagination
-} = cafeFranchiseState || {};
-
-useEffect(() => {
-    dispatch(fetchTopCafes({ page: 1 }));
-  }, [dispatch]);
+ useEffect(() => {
+     dispatch(homeSection2({ page: 1 }));
+   }, [dispatch]);
 
   useLayoutEffect(() => {
     const updateVisibleCards = () => {
@@ -92,7 +103,35 @@ useEffect(() => {
     return () => window.removeEventListener("resize", updateVisibleCards);
   }, [dimensions.width, isMobile]);
 
- 
+  const handleLikeClick = useCallback(
+    async (brandId) => {
+         if (!token) {
+              setShowLogin(true);
+              return;
+            }
+            dispatch(toggleBrandLike(brandId))
+            dispatch(toggleHomeCardLike(brandId))
+            await likeApiFunction(brandId)
+          },
+   
+    [dispatch]
+  );
+
+  const handleApply = useCallback(
+    (brand) => {
+      const token = localStorage.getItem("accessToken");
+      const id =
+        localStorage.getItem("investorUUID") ||
+        localStorage.getItem("brandUUID");
+
+      if (token && id) {
+        dispatch(viewApi(brand.uuid));
+      }
+
+      dispatch(openBrandDialog(brand));
+    },
+    [dispatch]
+  );
 
   const getScrollDistance = useCallback(() => {
     return dimensions.width + (isMobile ? 16 : 24);
@@ -226,10 +265,10 @@ useEffect(() => {
               },
             }}
           >
-            Top Coffee & Tea Cafes Brands
+            Top Beauty And Health Franchises
           </Typography>
 
-          <Button
+         <Button
   variant="contained"
   size="small"
   aria-label="view more brands"
@@ -260,11 +299,11 @@ useEffect(() => {
         <Box sx={{ position: "relative" }}>
           <Button
             onClick={handlePrevClick}
-            disabled={!showStartShadow}
             aria-label="previous"
+            disabled={!showStartShadow}
             sx={{
               position: "absolute",
-              left: isMobile ? 2 : 8,
+              left: isMobile ? 4 : 8,
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 1,
@@ -328,6 +367,8 @@ useEffect(() => {
               <motion.div key={brand.uuid}>
                 <HomePageBrandCard
                   brand={brand}
+                  handleApply={handleApply}
+                  handleLikeClick={handleLikeClick}
                   likeProcessing={likeProcessing}
                   dimensions={dimensions}
                   theme={theme}
@@ -347,4 +388,4 @@ useEffect(() => {
   );
 };
 
-export default React.memo(TopCafeFranchises);
+export default React.memo(HomeSection2);

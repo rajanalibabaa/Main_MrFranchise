@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from "react-redux";
 import LoginPage from "../../Pages/LoginPage/LoginPage";
 import { motion } from "framer-motion";
 import HomePageBrandCard from "./HomePageBrandCard.jsx";
-import { fetchTopFoodFranchises,   } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
+import { homeSection1   } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
 
 const CARD_DIMENSIONS = {
   mobile: { width: 280, height: 520 },
@@ -31,7 +31,7 @@ const CARD_DIMENSIONS = {
   largeDesktop: { width: 327, height: 500 },
 };
 
-const TopFoodFranchises = () => {
+const HomeSection1 = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -61,20 +61,18 @@ const TopFoodFranchises = () => {
 
 
    // Debugging: Add console.log to check Redux state
-const foodFranchiseState = useSelector((state) => state.foodfranchise.foodFranchises);
-
-
+const homeSection1State  = useSelector((state) => state.overAllPlatform.homeSection1);
 
 const {
   brands = [],
   isLoading,
   error,
   pagination
-} = foodFranchiseState || {};
+} = homeSection1State  || {};
 
   // Load initial data
   useEffect(() => {
-    dispatch(fetchTopFoodFranchises({ page: 1 }));
+    dispatch(homeSection1({ page: 1 }));
   }, [dispatch]);
 
   // Handle scroll to load more
@@ -94,7 +92,7 @@ const {
     ) {
       const nextPage = currentPage + 1;
       setCurrentPage(nextPage);
-      dispatch(fetchTopFoodFranchises({ page: nextPage }));
+      dispatch(homeSection1({ page: nextPage }));
     }
   }, [pagination, isLoading, currentPage, dispatch]);
 
@@ -240,7 +238,7 @@ const {
             },
           }}
         >
-          Top Food Franchises
+          Top Automotive Franchise
         </Typography>
 
        <Button
@@ -365,4 +363,4 @@ const {
   );
 };
 
-export default React.memo(TopFoodFranchises);
+export default React.memo(HomeSection1);

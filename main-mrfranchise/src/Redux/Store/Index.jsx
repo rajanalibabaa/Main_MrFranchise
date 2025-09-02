@@ -10,7 +10,7 @@ import navReducer from "../Slices/navbarSlice";
 import loadingReducer from "../Slices/loadingSlice";
 import getAllBrands from "../Slices/GetAllBrandsDataUpdationFile";
 import openBrandViewPage from "../Slices/OpenBrandNewPageSlice";
-import topFoodsfranchise from "../Slices/TopCardFetchingSlice";
+import overAllPlatformReducer from "../Slices/TopCardFetchingSlice";
 import filterDropdown from "../../Redux/Slices/filterDropdownData";
 import filterBrandReducer from "../../Redux/Slices/FilterBrandSlice";
 import brandCategoryReducer from "../../Redux/Slices/SideMenuHoverBrandSlices";
@@ -18,15 +18,17 @@ import ShortListBrands from "../../Redux/Slices/shortlistslice";
 import LikedBrands from "../../Redux/Slices/likeSlice"
 import viewedBrands from "../../Redux/Slices/viewSlice.jsx"
 
+
 // Combine reducers first
 const rootReducer = combineReducers({
   navbar: navReducer,
   auth: authReducer,
   filterBrands: filterBrandReducer,
+  overAllPlatform: overAllPlatformReducer,
   filterDropdown: filterDropdown,
   loading: loadingReducer,
   brands: getAllBrands,
-  foodfranchise: topFoodsfranchise,
+  // foodfranchise: topFoodsfranchise,
   openBrandDialog: openBrandViewPage,
   brandCategory: brandCategoryReducer,
   shortList: ShortListBrands,

@@ -292,17 +292,17 @@ const pageConfig = {
   // ...rest unchanged
   sections: [
     { component: "TopBrandThreevdocards", background: "#fff" },
-    { component: "TopFoodFranchise", background: "#fff" },
-    { component: "TopBeverageFranchise", background: "#fff" },
-    { component: "LikedBrands", background: "#fff" },
-    { component: "ViewBrands", background: "#fff" },
-    { component: "TopCafeFranchises", background: "#fff" },
-    { component: "TopDesertBakeryFranchise", background: "#fff" },
-    { component: "TopTruckAndKiosks", background: "#fff" },
-    { component: "ShortlistBrands", background: "#fff" },
-    { component: "TopRestaurantsFranchise", background: "#fff" },
-    { component: "FindFranchiseLocations", background: "#fff" },
-    { component: "ToTrendingBrands", title: "Trending Brands", background: "#fff" },
+    { component: "HomeSection1", background: "#fff" },
+    { component: "HomeSection2", background: "#fff" },
+    { component: "HomeSection3", background: "#fff" },
+    // { component: "LikedBrands", background: "#fff" },
+    // { component: "ViewBrands", background: "#fff" },
+    // { component: "TopDesertBakeryFranchise", background: "#fff" },
+    // { component: "TopTruckAndKiosks", background: "#fff" },
+    // { component: "ShortlistBrands", background: "#fff" },
+    // { component: "TopRestaurantsFranchise", background: "#fff" },
+    // { component: "FindFranchiseLocations", background: "#fff" },
+    // { component: "ToTrendingBrands", title: "Trending Brands", background: "#fff" },
   ],
   animations: {
     banner: {
@@ -340,17 +340,18 @@ const useDynamicComponents = () => {
     // Map of logical name -> file name (adjust to your real files)
     const entries = [
       { key: "TopBrandThreevdocards", file: "TopBrandThreeVdoCards.jsx" },
-      { key: "LikedBrands", file: "LikedBrands.jsx" },
-      { key: "ShortlistBrands", file: "ShortlistBrands.jsx" },
-      { key: "TopCafeFranchises", file: "TopCafeBrands.jsx" },
-      { key: "TopFoodFranchise", file: "TopFoodFranchise.jsx" },
-      { key: "ViewBrands", file: "ViewBrands.jsx" },
-      { key: "TopBeverageFranchise", file: "TopBeverageFranchise.jsx" },
-      { key: "TopDesertBakeryFranchise", file: "TopDesertBakerys.jsx" },
-      { key: "TopTruckAndKiosks", file: "TopTruckAndKiosks.jsx" },
-      { key: "TopRestaurantsFranchise", file: "TopRestaurantsFranchise.jsx" },
-      { key: "ToTrendingBrands", file: "ToTrendingBrands.jsx" },
-      { key: "FindFranchiseLocations", file: "FindFranchiseLocations.jsx" },
+      // { key: "LikedBrands", file: "LikedBrands.jsx" },
+      // { key: "ShortlistBrands", file: "ShortlistBrands.jsx" },
+      
+      { key: "HomeSection1", file: "HomeSection1.jsx" },
+      { key: "HomeSection2", file: "HomeSection2.jsx" },
+      { key: "HomeSection3", file: "HomeSection3.jsx" },
+      // { key: "ViewBrands", file: "ViewBrands.jsx" },
+      // { key: "TopDesertBakeryFranchise", file: "TopDesertBakerys.jsx" },
+      // { key: "TopTruckAndKiosks", file: "TopTruckAndKiosks.jsx" },
+      // { key: "TopRestaurantsFranchise", file: "TopRestaurantsFranchise.jsx" },
+      // { key: "ToTrendingBrands", file: "ToTrendingBrands.jsx" },
+      // { key: "FindFranchiseLocations", file: "FindFranchiseLocations.jsx" },
     ];
 
     const map = {};

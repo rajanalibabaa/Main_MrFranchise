@@ -70,11 +70,14 @@ function TopBrandVdoCards() {
 
   const timeoutRef = useRef(null);
   const videoRefs = useRef([]);
+  
   // const containerRef = useRef(null);
+
  const [containerRef, inView] = useInView({
     threshold: 0.3,
     triggerOnce: false
   });
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
