@@ -126,10 +126,7 @@ function Footer() {
               >
                 Empowering franchise growth by connecting brands <br />
                 with serious investors through innovative digital solutions.
-              </Typography>
-
-              
-<Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4}>
             <Typography
               variant="h6"
               sx={{
@@ -245,6 +242,10 @@ function Footer() {
               </Box>
             </Box>
           </Grid>
+              </Typography>
+
+              
+
               {/* Contact Info */}
             </Box>
           </Grid>
