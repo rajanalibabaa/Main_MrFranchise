@@ -18,8 +18,7 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchTopRestarunt} from '../../Redux/Slices/TopCardFetchingSlice.jsx';
-
+import { homeSection6} from '../../Redux/Slices/TopCardFetchingSlice.jsx';
 import { motion } from "framer-motion";
 import HomePageBrandCard from "./HomePageBrandCard.jsx";
 
@@ -32,17 +31,18 @@ const CARD_DIMENSIONS = {
   largeDesktop: { width: 327, height: 500 },
 };
 
-const TopRestaurantsFranchise = () => {
+const HomeSection6 = () => {
    const theme = useTheme();
    const dispatch = useDispatch();
- 
-  const fetchToprestarunt = useSelector((state) => state.foodfranchise.restaurant);
+
+  const homeSection6State  = useSelector((state) => state.overAllPlatform.homeSection6);
+
   const {
     brands = [],
     isLoading,
     error,
     pagination
-  } = fetchToprestarunt || {};
+  } = homeSection6State  || {};
 
  
    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -78,7 +78,7 @@ const TopRestaurantsFranchise = () => {
    }, [isMobile, isTablet, isSmallDesktop, isDesktop, isLargeDesktop]);
  
  useEffect(() => {
-     dispatch(fetchTopRestarunt({ page: 1 }));
+     dispatch(homeSection6({ page: 1 }));
    }, [dispatch]);
  
    useLayoutEffect(() => {
@@ -230,7 +230,7 @@ const TopRestaurantsFranchise = () => {
                },
              }}
            >
-             Top Restaurant Brands
+             Top Food & Beverages
            </Typography>
  
            <Button
@@ -351,4 +351,4 @@ const TopRestaurantsFranchise = () => {
    );
 };
 
-export default React.memo(TopRestaurantsFranchise);
+export default React.memo(HomeSection6);

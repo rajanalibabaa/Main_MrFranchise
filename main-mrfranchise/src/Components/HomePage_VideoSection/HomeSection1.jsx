@@ -238,7 +238,7 @@ const {
             },
           }}
         >
-          Top Automotive Franchise
+          Top Automotive 
         </Typography>
 
        <Button

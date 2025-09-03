@@ -18,7 +18,7 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchDesertAndBakery  } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
+import { homeSection4  } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
 
 import LoginPage from "../../Pages/LoginPage/LoginPage";
 import { motion } from "framer-motion";
@@ -33,17 +33,18 @@ const CARD_DIMENSIONS = {
   largeDesktop: { width: 327, height: 500 },
 };
 
-const TopDesertBakerys = () => {
+const HomeSection4 = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
- const fetchDesertAndBakeryState = useSelector((state) => state.foodfranchise.desertAndBakery);
- const {
-   brands = [],
-   isLoading,
-   error,
-   pagination
- } = fetchDesertAndBakeryState || {};
+const homeSection4State  = useSelector((state) => state.overAllPlatform.homeSection4);
+
+const {
+  brands = [],
+  isLoading,
+  error,
+  pagination
+} = homeSection4State  || {};
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -78,7 +79,7 @@ const TopDesertBakerys = () => {
   }, [isMobile, isTablet, isSmallDesktop, isDesktop, isLargeDesktop]);
 
 useEffect(() => {
-    dispatch(fetchDesertAndBakery({ page: 1 }));
+    dispatch(homeSection4({ page: 1 }));
   }, [dispatch]);
 
   useLayoutEffect(() => {
@@ -231,7 +232,7 @@ useEffect(() => {
               },
             }}
           >
-            Top Dessert & Bakery Brands
+            Top Education & Training 
           </Typography>
 
           <Button
@@ -352,4 +353,4 @@ useEffect(() => {
   );
 };
 
-export default React.memo(TopDesertBakerys);
+export default React.memo(HomeSection4);

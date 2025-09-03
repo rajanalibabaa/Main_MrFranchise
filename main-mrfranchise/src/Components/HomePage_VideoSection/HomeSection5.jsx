@@ -18,7 +18,7 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchTopTruckAndKiosksFranchises,   } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
+import { homeSection5   } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
 
 import LoginPage from "../../Pages/LoginPage/LoginPage";
 import { motion } from "framer-motion";
@@ -33,17 +33,18 @@ const CARD_DIMENSIONS = {
   largeDesktop: { width: 327, height: 500 },
 };
 
-const TopTruckAndKiosks = () => {
+const HomeSection5 = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
- const fetchTopTruckAndKiosks = useSelector((state) => state.foodfranchise.trucksAndKiosks);
- const {
-   brands = [],
-   isLoading,
-   error,
-   pagination
- } = fetchTopTruckAndKiosks || {};
+const homeSection5State  = useSelector((state) => state.overAllPlatform.homeSection5);
+
+const {
+  brands = [],
+  isLoading,
+  error,
+  pagination
+} = homeSection5State  || {};
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -78,7 +79,7 @@ const TopTruckAndKiosks = () => {
   }, [isMobile, isTablet, isSmallDesktop, isDesktop, isLargeDesktop]);
 
 useEffect(() => {
-    dispatch(fetchTopTruckAndKiosksFranchises({ page: 1 }));
+    dispatch(homeSection5({ page: 1 }));
   }, [dispatch]);
 
   useLayoutEffect(() => {
@@ -90,6 +91,7 @@ useEffect(() => {
         const count = Math.floor(containerWidth / (cardWidth + gap));
         setVisibleCardCount(Math.max(1, count));
       }
+
     };
 
     updateVisibleCards();
@@ -230,7 +232,7 @@ useEffect(() => {
               },
             }}
           >
-            Top Truck & Kiosks Brands
+            Top Fashion & Lifestyle 
           </Typography>
 
           <Button
@@ -351,4 +353,4 @@ useEffect(() => {
   );
 };
 
-export default React.memo(TopTruckAndKiosks);
+export default React.memo(HomeSection5);
