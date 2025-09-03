@@ -160,7 +160,7 @@ const FilterPanel = React.memo(
           sx={{ mb: 3 }}
         />
 
-       {/* Main Category Filter */}
+        {/* Main Category Filter
         <Accordion
           expanded={expandedSections.mainCategory}
           onChange={() => toggleSection("mainCategory")}
@@ -228,6 +228,8 @@ const FilterPanel = React.memo(
           <Typography variant="h6">Industry</Typography>
           <Typography ml={5}color="#ff9800">Food & Beverage</Typography>
         </Box> */}
+
+
         
 
         {/* Sub Category Filter */}
