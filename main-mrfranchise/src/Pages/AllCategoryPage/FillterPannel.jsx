@@ -222,12 +222,15 @@ const FilterPanel = React.memo(
               </RadioGroup>
             </Box>
           </AccordionDetails>
-        </Accordion> */}
+        </Accordion> 
 
         {/* <Box>
           <Typography variant="h6">Industry</Typography>
           <Typography ml={5}color="#ff9800">Food & Beverage</Typography>
         </Box> */}
+
+
+        
 
         {/* Sub Category Filter */}
         <Accordion

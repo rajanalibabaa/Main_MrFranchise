@@ -265,7 +265,7 @@ const {
               },
             }}
           >
-            Top Beauty And Health Franchises
+            Top Beauty & Health 
           </Typography>
 
          <Button

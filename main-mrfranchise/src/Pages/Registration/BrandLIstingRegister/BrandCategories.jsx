@@ -705,7 +705,7 @@ export const categories = [
     ],
   },
   {
-    name: "Reatils",
+    name: "Retails",
     children: [
       {
         groupId:"A",
@@ -769,7 +769,7 @@ export const categories = [
     ],
   },
   {
-    name: "Sports & Fitness & entertainment",
+    name: "Sports & Fitness & Entertainment",
     children: [
       {
         groupId:"A",

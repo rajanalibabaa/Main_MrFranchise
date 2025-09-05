@@ -18,7 +18,7 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchTopTruckAndKiosksFranchises,   } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
+import { homeSection8  } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
 
 import LoginPage from "../../Pages/LoginPage/LoginPage";
 import { motion } from "framer-motion";
@@ -33,17 +33,18 @@ const CARD_DIMENSIONS = {
   largeDesktop: { width: 327, height: 500 },
 };
 
-const TopTruckAndKiosks = () => {
+const HomeSection8 = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
- const fetchTopTruckAndKiosks = useSelector((state) => state.foodfranchise.trucksAndKiosks);
- const {
-   brands = [],
-   isLoading,
-   error,
-   pagination
- } = fetchTopTruckAndKiosks || {};
+const homeSection8State  = useSelector((state) => state.overAllPlatform.homeSection8);
+
+const {
+  brands = [],
+  isLoading,
+  error,
+  pagination
+} = homeSection8State  || {};
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -78,7 +79,7 @@ const TopTruckAndKiosks = () => {
   }, [isMobile, isTablet, isSmallDesktop, isDesktop, isLargeDesktop]);
 
 useEffect(() => {
-    dispatch(fetchTopTruckAndKiosksFranchises({ page: 1 }));
+    dispatch(homeSection8({ page: 1 }));
   }, [dispatch]);
 
   useLayoutEffect(() => {
@@ -97,6 +98,7 @@ useEffect(() => {
     return () => window.removeEventListener("resize", updateVisibleCards);
   }, [dimensions.width, isMobile]);
 
+  
 
   const getScrollDistance = useCallback(() => {
     return dimensions.width + (isMobile ? 16 : 24);
@@ -230,7 +232,7 @@ useEffect(() => {
               },
             }}
           >
-            Top Truck & Kiosks Brands
+            Top Hotels & Resorts
           </Typography>
 
           <Button
@@ -291,8 +293,8 @@ useEffect(() => {
 
           <Button
             onClick={handleNextClick}
-            aria-label="next"
             disabled={!showEndShadow}
+            aria-label="next"
             sx={{
               position: "absolute",
               right: isMobile ? 4 : 8,
@@ -351,4 +353,4 @@ useEffect(() => {
   );
 };
 
-export default React.memo(TopTruckAndKiosks);
+export default React.memo(HomeSection8);

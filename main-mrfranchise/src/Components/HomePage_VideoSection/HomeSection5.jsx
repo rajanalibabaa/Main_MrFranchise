@@ -18,7 +18,7 @@ import ArrowBack from "@mui/icons-material/ArrowBack";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import { useSelector, useDispatch } from "react-redux";
-import { homeSection3  } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
+import { homeSection5   } from '../../Redux/Slices/TopCardFetchingSlice.jsx';
 
 import LoginPage from "../../Pages/LoginPage/LoginPage";
 import { motion } from "framer-motion";
@@ -33,10 +33,18 @@ const CARD_DIMENSIONS = {
   largeDesktop: { width: 327, height: 500 },
 };
 
-const HomeSection3 = () => {
+const HomeSection5 = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
+const homeSection5State  = useSelector((state) => state.overAllPlatform.homeSection5);
+
+const {
+  brands = [],
+  isLoading,
+  error,
+  pagination
+} = homeSection5State  || {};
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -54,6 +62,14 @@ const HomeSection3 = () => {
   const [showEndShadow, setShowEndShadow] = useState(true);
   const [visibleCardCount, setVisibleCardCount] = useState(4);
 
+  // const dessertBakeryBrands = useMemo(() => {
+  //   if (!filteredData?.length) return [];
+  //   return filteredData.filter((brand) => {
+  //     const category = brand?.franchiseDetails?.brandCategories?.sub || "";
+  //     return category.includes("Dessert & Bakery");
+  //   });
+  // }, [filteredData]);
+
   const dimensions = useMemo(() => {
     if (isMobile) return CARD_DIMENSIONS.mobile;
     if (isTablet) return CARD_DIMENSIONS.tablet;
@@ -62,17 +78,8 @@ const HomeSection3 = () => {
     return CARD_DIMENSIONS.largeDesktop;
   }, [isMobile, isTablet, isSmallDesktop, isDesktop, isLargeDesktop]);
 
-const homeSection3State  = useSelector((state) => state.overAllPlatform.homeSection3);
-
-const {
-  brands = [],
-  isLoading,
-  error,
-  pagination
-} = homeSection3State  || {};
-
 useEffect(() => {
-    dispatch(homeSection3({ page: 1 }));
+    dispatch(homeSection5({ page: 1 }));
   }, [dispatch]);
 
   useLayoutEffect(() => {
@@ -84,6 +91,7 @@ useEffect(() => {
         const count = Math.floor(containerWidth / (cardWidth + gap));
         setVisibleCardCount(Math.max(1, count));
       }
+
     };
 
     updateVisibleCards();
@@ -91,7 +99,6 @@ useEffect(() => {
     return () => window.removeEventListener("resize", updateVisibleCards);
   }, [dimensions.width, isMobile]);
 
- 
 
   const getScrollDistance = useCallback(() => {
     return dimensions.width + (isMobile ? 16 : 24);
@@ -184,6 +191,10 @@ useEffect(() => {
     );
   }
 
+  if (brands.length === 0) {
+    return 
+  }
+
   return (
     brands.length > 0 && (
       <Box
@@ -225,7 +236,7 @@ useEffect(() => {
               },
             }}
           >
-            Top Business & Services 
+            Top Fashion & Lifestyle 
           </Typography>
 
           <Button
@@ -259,8 +270,8 @@ useEffect(() => {
         <Box sx={{ position: "relative" }}>
           <Button
             onClick={handlePrevClick}
-            disabled={!showStartShadow}
             aria-label="previous"
+            disabled={!showStartShadow}
             sx={{
               position: "absolute",
               left: isMobile ? 2 : 8,
@@ -286,8 +297,8 @@ useEffect(() => {
 
           <Button
             onClick={handleNextClick}
-            disabled={!showEndShadow}
             aria-label="next"
+            disabled={!showEndShadow}
             sx={{
               position: "absolute",
               right: isMobile ? 4 : 8,
@@ -346,4 +357,4 @@ useEffect(() => {
   );
 };
 
-export default React.memo(HomeSection3);
+export default React.memo(HomeSection5);

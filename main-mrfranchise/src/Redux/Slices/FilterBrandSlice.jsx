@@ -33,7 +33,7 @@ export const fetchFilteredBrands = createAsyncThunk(
       if (subcat) params.append('subcat', subcat);
       if (childcat) params.append('childcat', childcat);
       if (serchterm) params.append('serchterm', serchterm);
-      if (country) params.append('country', country);
+      if (country) params.append('country', country);                                                                         
       if (state) params.append('state', state);
       if (district) params.append('district', district);
       if (city) params.append('city', city);

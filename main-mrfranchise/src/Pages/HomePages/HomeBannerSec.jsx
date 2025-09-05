@@ -1,13 +1,7 @@
-
-import React, {
-  useState,
-  useEffect,
-  Suspense,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, Suspense, useCallback } from "react";
 import { useInView } from "react-intersection-observer";
-import { FixedSizeList as List } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList as List } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -55,54 +49,74 @@ class ErrorBoundary extends React.Component {
 const LazyCard = React.memo(({ component: CardComponent, index, style }) => {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    rootMargin: '400px',
+    rootMargin: "400px",
   });
   return (
     <div ref={ref} style={style}>
       {inView ? (
-        <Suspense fallback={<Box minHeight={100} display="flex" alignItems="center" justifyContent="center"><CircularProgress size={24} color="success" /></Box>}>
+        <Suspense
+          fallback={
+            <Box
+              minHeight={100}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CircularProgress size={24} color="success" />
+            </Box>
+          }
+        >
           <CardComponent key={index} />
         </Suspense>
       ) : (
-        <div style={{ height: '100%', backgroundColor: '#f5f5f5' }} />
+        <div style={{ height: "100%", backgroundColor: "#f5f5f5" }} />
       )}
     </div>
   );
 });
-const VirtualizedCardList = React.memo(({ items, itemHeight = 400, componentProps }) => {
-  const CardRow = ({ index, style }) => (
-    <LazyCard
-      component={items[index]}
-      index={index}
-      style={style}
-      {...componentProps}
-    />
-  );
-  return (
-    <AutoSizer>
-      {({ height, width }) => (
-        <List
-          height={height}
-          itemCount={items.length}
-          itemSize={itemHeight}
-          width={width}
-          style={{ overflowX: 'hidden' }}
-        >
-          {CardRow}
-        </List>
-      )}
-    </AutoSizer>
-  );
-});
+const VirtualizedCardList = React.memo(
+  ({ items, itemHeight = 400, componentProps }) => {
+    const CardRow = ({ index, style }) => (
+      <LazyCard
+        component={items[index]}
+        index={index}
+        style={style}
+        {...componentProps}
+      />
+    );
+    return (
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            height={height}
+            itemCount={items.length}
+            itemSize={itemHeight}
+            width={width}
+            style={{ overflowX: "hidden" }}
+          >
+            {CardRow}
+          </List>
+        )}
+      </AutoSizer>
+    );
+  }
+);
 
 // --- ComponentLoader to fully wrap lazy components with error and suspense ---
 const ComponentLoader = React.memo(({ Component, ...props }) => (
   <ErrorBoundary>
-    <Suspense fallback={
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
-        <CircularProgress />
-      </Box>
-    }>
+    <Suspense
+      fallback={
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight={200}
+        >
+          <CircularProgress />
+        </Box>
+      }
+    >
       <Component {...props} />
     </Suspense>
   </ErrorBoundary>
@@ -268,8 +282,6 @@ const bannerTexts = [
   },
 ];
 
-
-
 const pageConfig = {
   heroBanner: {
     backgroundImage: HomeBanner,
@@ -295,14 +307,18 @@ const pageConfig = {
     { component: "HomeSection1", background: "#fff" },
     { component: "HomeSection2", background: "#fff" },
     { component: "HomeSection3", background: "#fff" },
-    // { component: "LikedBrands", background: "#fff" },
-    // { component: "ViewBrands", background: "#fff" },
-    // { component: "TopDesertBakeryFranchise", background: "#fff" },
-    // { component: "TopTruckAndKiosks", background: "#fff" },
-    // { component: "ShortlistBrands", background: "#fff" },
-    // { component: "TopRestaurantsFranchise", background: "#fff" },
-    // { component: "FindFranchiseLocations", background: "#fff" },
-    // { component: "ToTrendingBrands", title: "Trending Brands", background: "#fff" },
+    { component: "HomeSection4", background: "#fff" },
+    { component: "HomeSection5", background: "#fff" },
+    { component: "HomeSection6", background: "#fff" },
+    { component: "HomeSection7", background: "#fff" },
+    { component: "HomeSection8", background: "#fff" },
+    { component: "HomeSection9", background: "#fff" },
+    { component: "HomeSection10", background: "#fff" },
+    { component: "LikedBrands", background: "#fff" },
+    { component: "ViewBrands", background: "#fff" },
+    { component: "ShortlistBrands", background: "#fff" },
+    { component: "FindFranchiseLocations", background: "#fff" },
+    { component: "ToTrendingBrands", title: "Trending Brands", background: "#fff" },
   ],
   animations: {
     banner: {
@@ -327,37 +343,42 @@ const pageConfig = {
   },
 };
 
-
-
-
 const useDynamicComponents = () => {
   return React.useMemo(() => {
     // Gather all potential modules in this folder (adjust extension if needed)
-    const modules = import.meta.glob("../../Components/HomePage_VideoSection/*.jsx", {
-      eager: false,
-    });
+    const modules = import.meta.glob(
+      "../../Components/HomePage_VideoSection/*.jsx",
+      {
+        eager: false,
+      }
+    );
 
     // Map of logical name -> file name (adjust to your real files)
     const entries = [
       { key: "TopBrandThreevdocards", file: "TopBrandThreeVdoCards.jsx" },
-      // { key: "LikedBrands", file: "LikedBrands.jsx" },
-      // { key: "ShortlistBrands", file: "ShortlistBrands.jsx" },
-      
       { key: "HomeSection1", file: "HomeSection1.jsx" },
       { key: "HomeSection2", file: "HomeSection2.jsx" },
       { key: "HomeSection3", file: "HomeSection3.jsx" },
-      // { key: "ViewBrands", file: "ViewBrands.jsx" },
-      // { key: "TopDesertBakeryFranchise", file: "TopDesertBakerys.jsx" },
-      // { key: "TopTruckAndKiosks", file: "TopTruckAndKiosks.jsx" },
-      // { key: "TopRestaurantsFranchise", file: "TopRestaurantsFranchise.jsx" },
-      // { key: "ToTrendingBrands", file: "ToTrendingBrands.jsx" },
-      // { key: "FindFranchiseLocations", file: "FindFranchiseLocations.jsx" },
+      { key: "HomeSection4", file: "HomeSection4.jsx" },
+      { key: "HomeSection5", file: "HomeSection5.jsx" },
+      { key: "HomeSection6", file: "HomeSection6.jsx" },
+      { key: "HomeSection7", file: "HomeSection7.jsx" },
+      { key: "HomeSection8", file: "HomeSection8.jsx" },
+      { key: "HomeSection9", file: "HomeSection9.jsx" },
+      { key: "HomeSection10", file: "HomeSection10.jsx" },
+      { key: "LikedBrands", file: "LikedBrands.jsx" },
+      { key: "ShortlistBrands", file: "ShortlistBrands.jsx" },
+      { key: "ViewBrands", file: "ViewBrands.jsx" },
+      { key: "ToTrendingBrands", file: "ToTrendingBrands.jsx" },
+      { key: "FindFranchiseLocations", file: "FindFranchiseLocations.jsx" },
     ];
 
     const map = {};
 
     entries.forEach(({ key, file }) => {
       const path = `../../Components/HomePage_VideoSection/${file}`;
+      console.log("Checking for module:", path);
+
 
       // Only if the module exists, create a lazy component
       if (path in modules) {
@@ -419,10 +440,11 @@ const HomeBannerSec = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const controls = useAnimation();
-const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
-const navigate = useNavigate();
+  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
+  const navigate = useNavigate();
   useEffect(() => {
-    const nav = performance.getEntriesByType("navigation")[0]?.type === "reload";
+    const nav =
+      performance.getEntriesByType("navigation")[0]?.type === "reload";
     const shown = sessionStorage.getItem("popup-shown");
     dispatch(showLoading());
     const t = setTimeout(() => {
@@ -653,27 +675,30 @@ const navigate = useNavigate();
       </Box>
 
       {pageConfig.sections
-  .filter(section => {
-    // Show everything except login-required sections when logged out
-    if (!isLoggedIn && ["ViewBrands", "ShortlistBrands", "LikedBrands"].includes(section.component)) {
-      return false; // Skip these if logged out
-    }
-    return true;
-  })
-  .map((section, index) => (
-    <LazySection
-      key={index}
-      componentKey={section.component}
-      dynamicComponents={dynamicComponents}
-      background={section.background || "#d5e7ddac"}
-      isMobile={isMobile}
-    />
-))}
+        .filter((section) => {
+          // Show everything except login-required sections when logged out
+          if (
+            !isLoggedIn &&
+            ["ViewBrands", "ShortlistBrands", "LikedBrands"].includes(
+              section.component
+            )
+          ) {
+            return false; // Skip these if logged out
+          }
+          return true;
+        })
+        .map((section, index) => (
+          <LazySection
+            key={index}
+            componentKey={section.component}
+            dynamicComponents={dynamicComponents}
+            background={section.background || "#d5e7ddac"}
+            isMobile={isMobile}
+          />
+        ))}
 
-
-{/* 👇 Add here, before Footer */}
-<CompareButton />
-
+      {/* 👇 Add here, before Footer */}
+      <CompareButton />
 
       <Footer />
     </>
