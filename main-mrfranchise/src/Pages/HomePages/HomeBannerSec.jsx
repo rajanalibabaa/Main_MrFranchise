@@ -315,7 +315,7 @@ const pageConfig = {
     { component: "HomeSection9", background: "#fff" },
     { component: "HomeSection10", background: "#fff" },
     // { component: "LikedBrands", background: "#fff" },
-    // { component: "ViewBrands", background: "#fff" },
+    { component: "ViewBrands", background: "#fff" },
     // { component: "ShortlistBrands", background: "#fff" },
     { component: "FindFranchiseLocations", background: "#fff" },
     { component: "ToTrendingBrands", title: "Trending Brands", background: "#fff" },
@@ -368,7 +368,7 @@ const useDynamicComponents = () => {
       { key: "HomeSection10", file: "HomeSection10.jsx" },
       // { key: "LikedBrands", file: "LikedBrands.jsx" },
       // { key: "ShortlistBrands", file: "ShortlistBrands.jsx" },
-      // { key: "ViewBrands", file: "ViewBrands.jsx" },
+      { key: "ViewBrands", file: "ViewBrands.jsx" },
       { key: "ToTrendingBrands", file: "ToTrendingBrands.jsx" },
       { key: "FindFranchiseLocations", file: "FindFranchiseLocations.jsx" },
     ];
@@ -377,6 +377,8 @@ const useDynamicComponents = () => {
 
     entries.forEach(({ key, file }) => {
       const path = `../../Components/HomePage_VideoSection/${file}`;
+      console.log("Checking for module:", path);
+
 
       // Only if the module exists, create a lazy component
       if (path in modules) {

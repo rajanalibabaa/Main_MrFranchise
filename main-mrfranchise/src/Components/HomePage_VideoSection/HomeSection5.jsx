@@ -191,6 +191,10 @@ useEffect(() => {
     );
   }
 
+  if (brands.length === 0) {
+    return 
+  }
+
   return (
     brands.length > 0 && (
       <Box

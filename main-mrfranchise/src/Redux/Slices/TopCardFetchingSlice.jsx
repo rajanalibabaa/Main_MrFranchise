@@ -348,7 +348,6 @@ export const homeSection10 = createAsyncThunk(
     }
   }
 );
-
 const initialState = {
   homeSection1: {
     brands: [],
