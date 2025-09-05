@@ -70,7 +70,7 @@ const SEO = ({
       ))}
     </Helmet>
   );
-};ddkjlkd
+};
 
 SEO.propTypes = {
   title: PropTypes.string.isRequired,
