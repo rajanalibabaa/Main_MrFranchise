@@ -8,20 +8,14 @@ export const fetchFilterOptions = createAsyncThunk(
   'filterDropdown/fetchFilterOptions',
   async (params = {}, { rejectWithValue }) => {
     try {
-      const { sub, state, district,main } = params;
+      const { sub, state, district } = params;
       const queryParams = new URLSearchParams();
      
       if (sub) queryParams.append('sub', sub);
       if (state) queryParams.append('state', state);
       if (district) queryParams.append('district', district);
-      if (main){
-        queryParams.append('main', main);
-      }else {
-        queryParams.append('main', "Food & Beverages");
-      }
  
       const response = await axios.post(`${API_BASE_URL}filter/getAllBrandFiltersdata?${queryParams}`);
-      console.log("queryParams =====:", response.data.data)
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -71,7 +65,7 @@ const filterDropdownSlice = createSlice({
       state.childCategoriesError = null;
       state.districtsError = null;
       state.citiesError = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
