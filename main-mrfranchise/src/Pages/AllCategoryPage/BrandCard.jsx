@@ -192,14 +192,13 @@ const BrandCard = memo(
       try {
         if (!brand.isShortListed) {
           dispatch(addSortlist(brand));
-        } else dispatch(removeSortList(brand.uuid));
+        } else dispatch(removeSortList(brand.uuid)); 
         // Dispatch the Redux action to update UI immediately
         dispatch(toggleBrandShortListfilter(uuid));
         dispatch(toggleBrandShortList(uuid));
         dispatch(toggleHomeCardShortlist(uuid));
-
         // Call the API to update the server
-        await handleShortList(uuid);
+        await handleShortList(uuid); 
 
         // Trigger confetti if it's a new shortlist
         if (!isShortListed) {
@@ -215,6 +214,7 @@ const BrandCard = memo(
         setShortlistProcessing(false);
       }
     }, [brand, uuid, shortlistProcessing, onShowLogin, dispatch, isShortListed]);
+
 
 
     return (
