@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Box, Typography, Avatar, IconButton, Divider, CircularProgress } from "@mui/material";
+import { Box, Typography, Avatar, IconButton, Divider, CircularProgress, LinearProgress, Pagination, Grid } from "@mui/material";
 import { Business, Favorite, AssignmentTurnedIn, Bookmark, Close } from "@mui/icons-material";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import img from "../../assets/Images/logo.png";
 import { api } from "../../Api/api";
 import { fetchShortListedById } from "../../Redux/Slices/shortlistslice";
@@ -15,7 +16,7 @@ import ViewedBrands from "./DashBoardFunctions/ViewedBrands";
 import LikedTab from "./DashBoardFunctions/LikedTab";
 import AppliedTab from "./DashBoardFunctions/AppliedTab";
 import ShortlistedTab from "./DashBoardFunctions/ShortlistedTab";
-import {useNavigate} from "react-router-dom";
+
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const Dashboard = () => {
   const [removeMsg, setRemoveMsg] = useState("");
   const [userData, setUserData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(20);
+  const [itemsPerPage] = useState(10);
   const [isPaginating, setIsPaginating] = useState(false);
 
   const investorUUID = useSelector((state) => state.auth?.investorUUID);  
@@ -39,77 +40,83 @@ const Dashboard = () => {
   const shortlistedBrands = Array.isArray(shortListState.brands) ? shortListState.brands : [];
   const likedBrands = Array.isArray(likedBrandsState.brands) ? likedBrandsState.brands : [];
 
-  const isLoading = likedBrandsState.isLoading || shortListState.isLoading || isPaginating;
-  const errorMessage = likedBrandsState.error || shortListState.error;
+  const isLoading = likedBrandsState.isLoading || shortListState.isLoading || viewBrandsState.isLoading || isPaginating;
+  const errorMessage = likedBrandsState.error || shortListState.error || viewBrandsState.error;
 
   const stats = useMemo(() => ({
-    totalViews: viewPagination?.totalItems || viewedBrands?.length || 0,
-    totalLikes: likedBrands.length,
+    totalViews: viewPagination.totalItems || 0,
+    totalLikes: likedBrandsState.pagination?.total || 0,
     totalApplications: appliedBrands.length,
-    totalShortlisted: shortListState?.pagination?.total || shortlistedBrands.length
-  }), [viewedBrands, viewPagination, likedBrands, appliedBrands, shortlistedBrands, shortListState]);
+    totalShortlisted: shortListState.pagination?.total || 0
+  }), [viewPagination, likedBrandsState, appliedBrands, shortListState]);
 
   const fetchBrandDetails = async (brandId, config) => {
-    try {
-      const response = await axios.get(
-        `${api.user.get.brand}/${brandId}`,
-        config
-      );
-      return {
-        ...response.data.data,
-        businessType: response.data.data.businessType || response.data.data.category || 'Not specified'
-      };
-    } catch (error) {
-      console.error(`Error fetching brand ${brandId}:`, error);
-      return null;
-    }
+    // try {
+    //   const response = await axios.get(
+    //     `${api.user.get.brand}/${brandId}`,
+    //     config
+    //   );
+    //   return {
+    //     ...response.data.data,
+    //     businessType: response.data.data.businessType || response.data.data.category || 'Not specified'
+    //   };
+    // } catch (error) {
+    //   console.error(`Error fetching brand ${brandId}:`, error);
+    //   return null;
+    // }
   };
 
   const fetchData = useCallback(async () => {
-    if (!investorUUID || !AccessToken) return;
+  if (!investorUUID || !AccessToken) return;
 
-    try {
-      setIsPaginating(true);
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${AccessToken}`,
-        }
-      };
+  try {
+    setIsPaginating(true);
 
-      const [likedRes, shortlistRes, viewRes, appliedRes, userRes] = await Promise.all([
-        dispatch(fetchLikedBrandsById({ userId: investorUUID })),
-        dispatch(fetchShortListedById({ 
-          investorUUID, 
-          page: 1, 
-          limit: itemsPerPage 
-        })),     
-        dispatch(fetchViewBrandsById({ userId: investorUUID })),
-        axios.get(`${api.instantApplyApi.get.getInstaApplyById}/${investorUUID}`, config),
-        axios.get(`${api.user.get.investor}/${investorUUID}`, config)
-      ]);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${AccessToken}`,
+      }
+    };
 
-      // Enhance applied brands with additional details
-      const enhancedAppliedBrands = await Promise.all(
-        appliedRes.data?.data?.map(async (item) => {
-          if (!item.application?.brandId) return item;
-          
-          const brandDetails = await fetchBrandDetails(item.application.brandId, config);
-          return {
-            ...item,
-            brandDetails: brandDetails || {}
-          };
-        }) || []
-      );
+    // Run axios calls in parallel
+    const [appliedRes, userRes] = await Promise.all([
+      axios.get(`${api.instantApplyApi.get.getInstaApplyById}/${investorUUID}`, config),
+      axios.get(`${api.user.get.investor}/${investorUUID}`, config),
+    ]);
 
-      setAppliedBrands(enhancedAppliedBrands);
-      setUserData(userRes.data?.data || null);
-    } catch (error) {
-      console.error("Error in fetchData:", error);
-    } finally {
-      setIsPaginating(false);
-    }
-  }, [investorUUID, AccessToken, dispatch, itemsPerPage]);
+    // Dispatch Redux thunks separately (no destructuring here)
+    await Promise.all([
+      dispatch(fetchLikedBrandsById({ userId: investorUUID, page: 1, limit: itemsPerPage })),
+      dispatch(fetchShortListedById({ investorUUID, page: 1, limit: itemsPerPage })),
+      dispatch(fetchViewBrandsById({ userId: investorUUID, page: 1, limit: 10 })),
+    ]);
+
+    console.log("📌 Applied Response:", appliedRes.data);
+    console.log("📌 User Response:", userRes.data);
+
+    // Enhance applied brands
+    const enhancedAppliedBrands = await Promise.all(
+      appliedRes.data?.data?.map(async (item) => {
+        if (!item.application?.brandId) return item;
+
+        const brandDetails = await fetchBrandDetails(item.application.brandId, config);
+        return {
+          ...item,
+          brandDetails: brandDetails || {}
+        };
+      }) || []
+    );
+
+    setAppliedBrands(enhancedAppliedBrands);
+    setUserData(userRes.data?.data || null);
+
+  } catch (error) {
+    console.error("❌ Error in fetchData:", error);
+  } finally {
+    setIsPaginating(false);
+  }
+}, [investorUUID, AccessToken, dispatch, itemsPerPage]);
 
   useEffect(() => {
     const initialLiked = {};
@@ -128,7 +135,7 @@ const Dashboard = () => {
   }, [likedBrands, shortlistedBrands]);
 
   useEffect(() => {
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset page to 1 when tab changes
   }, [tabValue]);
 
   useEffect(() => {
@@ -158,13 +165,17 @@ const Dashboard = () => {
       await likeApiFunction(apiBrandId);
       setRemoveMsg("Brand removed successfully");
       setTimeout(() => setRemoveMsg(""), 3000);
-      dispatch(fetchLikedBrandsById({ userId: investorUUID }));
+      dispatch(fetchLikedBrandsById({ 
+        userId: investorUUID, 
+        page: currentPage, 
+        limit: itemsPerPage 
+      }));
     } catch (error) {
       console.error("Remove like error:", error);
       setRemoveMsg(error.message || "Failed to remove brand");
       setLikedStates(prev => ({ ...prev, [brandId]: true }));
     }
-  }, [investorUUID, dispatch, likedBrands]);
+  }, [investorUUID, dispatch, likedBrands, currentPage, itemsPerPage]);
 
   const toggleShortlist = useCallback(async (brandId) => {
     if (!brandId) return;
@@ -223,7 +234,7 @@ const Dashboard = () => {
 
       setRemoveMsg("Brand removed from view history");
       setTimeout(() => setRemoveMsg(""), 3000);
-      dispatch(fetchViewBrandsById({ userId: investorUUID }));
+      dispatch(fetchViewBrandsById({ userId: investorUUID, page: 1, limit: 10 }));
     } catch (error) {
       console.error("Error removing viewed brand:", error);
       setRemoveMsg(error.message || "Failed to remove brand from view history");
@@ -232,25 +243,34 @@ const Dashboard = () => {
     }
   }, [investorUUID, AccessToken, dispatch]);
 
-const handleViewDetails = useCallback((brand) => {
-  // Try to get brandId from multiple possible locations
-  const brandId = brand?.uuid || brand?.brandID?.uuid || brand?.brandID || brand?.originalItem?.brandDetails?.uuid;
-  
-  if (brandId) {
-    navigate(`/brands/${brandId}`);
-    // or window.open(`/brands/${brandId}`, '_blank') for new tab
-  } else {
-    console.error('Brand ID not found:', brand);
-    // Fallback to dialog or other action
-  }
-}, [navigate]);
+  const handleViewDetails = useCallback((brand) => {
+    const brandId = brand?.uuid || brand?.brandID?.uuid || brand?.brandID || brand?.originalItem?.brandDetails?.uuid;
+    
+    if (brandId) {
+      navigate(`/brands/${brandId}`);
+    } else {
+      console.error('Brand ID not found:', brand);
+    }
+  }, [navigate]);
 
   const handlePageChange = async (event, value) => {
     try {
       setIsPaginating(true);
       setCurrentPage(value);
       
-      if (tabValue === 3) {
+      if (tabValue === 0) {
+        await dispatch(fetchViewBrandsById({
+          userId: investorUUID,
+          page: value,
+          limit: 10
+        }));
+      } else if (tabValue === 1) {
+        await dispatch(fetchLikedBrandsById({
+          userId: investorUUID,
+          page: value,
+          limit: itemsPerPage
+        }));
+      } else if (tabValue === 3) {
         await dispatch(fetchShortListedById({
           investorUUID,
           page: value,
@@ -286,17 +306,11 @@ const handleViewDetails = useCallback((brand) => {
         return (
           <ViewedBrands
             brands={viewedBrands}
-            currentPage={currentPage}
-            itemsPerPage={itemsPerPage}
-            totalPages={Math.max(1, Math.ceil((viewedBrands?.length || 0) / itemsPerPage))}
+            currentPage={viewPagination.currentPage}
+            totalPages={viewPagination.totalPages}
             handlePageChange={handlePageChange}
-            likedStates={likedStates}
-            shortlistedStates={shortlistedStates}
-            onViewDetails={handleViewDetails}
-            onToggleLike={toggleLike}
-            onToggleShortlist={toggleShortlist}
-            onToggleViewClose={toggleViewClose}
-            isPaginating={isPaginating}
+            isLoading={viewBrandsState.isLoading}
+            errorMessage={viewBrandsState.error}
           />
         );
       case 1:
@@ -304,8 +318,7 @@ const handleViewDetails = useCallback((brand) => {
           <LikedTab
             items={likedBrands}
             currentPage={currentPage}
-            itemsPerPage={itemsPerPage}
-            totalPages={Math.max(1, Math.ceil((likedBrands?.length || 0) / itemsPerPage))}
+            totalPages={likedBrandsState.pagination?.totalPages || 1}
             handlePageChange={handlePageChange}
             likedStates={likedStates}
             shortlistedStates={shortlistedStates}
@@ -335,8 +348,8 @@ const handleViewDetails = useCallback((brand) => {
         return (
           <ShortlistedTab
             items={shortlistedBrands}
-            currentPage={currentPage}
-            totalPages={Math.max(1, Math.ceil((shortListState?.pagination?.total || 0) / itemsPerPage))}
+            currentPage={shortListState.pagination.currentPage}
+            totalPages={shortListState.pagination.totalPages}
             handlePageChange={handlePageChange}
             likedStates={likedStates}
             shortlistedStates={shortlistedStates}
@@ -344,6 +357,8 @@ const handleViewDetails = useCallback((brand) => {
             onToggleLike={toggleLike}
             onToggleShortlist={toggleShortlist}
             isPaginating={isPaginating}
+            isLoading={shortListState.isLoading}
+            errorMessage={shortListState.error}
           />
         );
       default:
@@ -353,38 +368,42 @@ const handleViewDetails = useCallback((brand) => {
     isLoading, errorMessage, tabValue, currentPage, itemsPerPage,
     viewedBrands, likedBrands, appliedBrands, shortlistedBrands,
     likedStates, shortlistedStates, handleViewDetails, 
-    toggleLike, toggleShortlist, toggleViewClose, isPaginating,
-    shortListState?.pagination?.total
+    toggleLike, toggleShortlist, isPaginating, viewPagination,
+    shortListState, viewBrandsState, likedBrandsState.pagination
   ]);
 
   return (
     <Box>
-      <Box sx={{
-        display: 'flex',
-        alignItems: 'center',
-        p: 2,
-        gap: 2
-      }}>
-        <Avatar
-          src={userData?.profileImage || img}
-          loading="lazy"
-          alt="Profile"
-          sx={{
-            width: 60,
-            height: 60,
-            mr: { md: 3 },
-            border: '3px solid #689f38'
-          }}
-        />
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h5" fontWeight={600}>
-            {userData?.firstName || 'Investor'} {userData?.lastName || ''}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {userData?.inveterID || ''}
-          </Typography>
-        </Box>
+      <Box sx={{ display: "flex", alignItems: "center", p: 2, gap: 2 }}>
+  {userData ? (
+    <>
+      <Avatar
+        src={userData?.profileImage || img}
+        loading="lazy"
+        alt="Profile"
+        sx={{
+          width: 60,
+          height: 60,
+          mr: { md: 3 },
+          border: "3px solid #689f38",
+        }}
+      />
+      <Box sx={{ flex: 1 }}>
+        <Typography variant="h5" fontWeight={600}>
+          {userData?.firstName || "Investor"} {userData?.lastName || ""}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {userData?.inveterID || ""}
+        </Typography>
       </Box>
+    </>
+  ) : (
+    <Typography variant="body2" color="text.secondary">
+      Loading profile...
+    </Typography>
+  )}
+</Box>
+
 
       <Box sx={{ 
         display: 'flex', 
