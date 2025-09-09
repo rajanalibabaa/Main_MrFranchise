@@ -225,7 +225,7 @@ const FilterPanel = React.memo(
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <Box sx={{ px: 1 }}>
-              <TextField
+              {/* <TextField
                 fullWidth
                 size="small"
                 placeholder="Search main categories..."
@@ -235,7 +235,7 @@ const FilterPanel = React.memo(
                 InputProps={{
                   startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
                 }}
-              />
+              /> */}
               {loading ? (
                 <Box sx={{ p: 2 }}>
                   <CircularProgress size={20} sx={{ color: "#ff9800" }} />
@@ -311,7 +311,7 @@ const FilterPanel = React.memo(
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <Box sx={{ px: 1 }}>
-              <TextField
+              {/* <TextField
                 fullWidth
                 size="small"
                 placeholder="Search sub categories..."
@@ -321,7 +321,7 @@ const FilterPanel = React.memo(
                 InputProps={{
                   startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
                 }}
-              />
+              /> */}
               {loading ? (
                 <Box sx={{ p: 2 }}>
                   <CircularProgress size={20} sx={{ color: "#ff9800" }} />
@@ -471,7 +471,7 @@ const FilterPanel = React.memo(
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <Box sx={{ px: 1 }}>
-              <TextField
+              {/* <TextField
                 fullWidth
                 size="small"
                 placeholder="Search model types..."
@@ -481,7 +481,7 @@ const FilterPanel = React.memo(
                 InputProps={{
                   startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
                 }}
-              />
+              /> */}
               <RadioGroup
                 value={filters.modelType || ""}
                 onChange={(e) => onFilterChange("modelType", e.target.value)}
@@ -618,7 +618,7 @@ const FilterPanel = React.memo(
                 }}
               >
                 <Typography variant="subtitle1" fontWeight="bold" fontSize="0.8125rem">
-                  Districts
+                  Cities
                 </Typography>
               </AccordionSummary>
               <AccordionDetails sx={{ px: 1 }}>
@@ -659,7 +659,7 @@ const FilterPanel = React.memo(
                           }}
                         />
                       }
-                      label={<Typography fontSize="0.8125rem">All Districts</Typography>}
+                      label={<Typography fontSize="0.8125rem">All Cities</Typography>}
                       sx={{ mb: 0, mr: 0 }}
                     />
                     {filteredDistricts.map((district) => (
@@ -686,7 +686,7 @@ const FilterPanel = React.memo(
             </Accordion>
 
             {/* City Filter */}
-            <Accordion
+            {/* <Accordion
               expanded={!!filters.district}
               disabled={!filters.district}
               elevation={0}
@@ -761,7 +761,7 @@ const FilterPanel = React.memo(
                   </RadioGroup>
                 )}
               </AccordionDetails>
-            </Accordion>
+            </Accordion> */}
           </AccordionDetails>
         </Accordion>
 
@@ -786,7 +786,7 @@ const FilterPanel = React.memo(
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <Box sx={{ px: 1 }}>
-              <TextField
+              {/* <TextField
                 fullWidth
                 size="small"
                 placeholder="Search investment ranges..."
@@ -796,7 +796,7 @@ const FilterPanel = React.memo(
                 InputProps={{
                   startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
                 }}
-              />
+              /> */}
               <RadioGroup
                 value={filters.investmentRange || ""}
                 onChange={(e) => onFilterChange("investmentRange", e.target.value)}

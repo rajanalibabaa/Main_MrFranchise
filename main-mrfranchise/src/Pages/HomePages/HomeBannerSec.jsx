@@ -304,6 +304,9 @@ const pageConfig = {
   // ...rest unchanged
   sections: [
     { component: "TopBrandThreevdocards", background: "#fff" },
+    { component: "LikedBrands", background: "#fff" },
+    { component: "ShortlistBrands", background: "#fff" },
+    { component: "ViewBrands", background: "#fff" },
     { component: "HomeSection1", background: "#fff" },
     { component: "HomeSection2", background: "#fff" },
     { component: "HomeSection3", background: "#fff" },
@@ -314,11 +317,12 @@ const pageConfig = {
     { component: "HomeSection8", background: "#fff" },
     { component: "HomeSection9", background: "#fff" },
     { component: "HomeSection10", background: "#fff" },
-    { component: "LikedBrands", background: "#fff" },
-    { component: "ViewBrands", background: "#fff" },
-    { component: "ShortlistBrands", background: "#fff" },
     { component: "FindFranchiseLocations", background: "#fff" },
-    { component: "ToTrendingBrands", title: "Trending Brands", background: "#fff" },
+    {
+      component: "ToTrendingBrands",
+      title: "Trending Brands",
+      background: "#fff",
+    },
   ],
   animations: {
     banner: {
@@ -356,6 +360,9 @@ const useDynamicComponents = () => {
     // Map of logical name -> file name (adjust to your real files)
     const entries = [
       { key: "TopBrandThreevdocards", file: "TopBrandThreeVdoCards.jsx" },
+      { key: "LikedBrands", file: "LikedBrands.jsx" },
+      { key: "ShortlistBrands", file: "ShortlistBrands.jsx" },
+      { key: "ViewBrands", file: "ViewBrands.jsx" },
       { key: "HomeSection1", file: "HomeSection1.jsx" },
       { key: "HomeSection2", file: "HomeSection2.jsx" },
       { key: "HomeSection3", file: "HomeSection3.jsx" },
@@ -366,9 +373,6 @@ const useDynamicComponents = () => {
       { key: "HomeSection8", file: "HomeSection8.jsx" },
       { key: "HomeSection9", file: "HomeSection9.jsx" },
       { key: "HomeSection10", file: "HomeSection10.jsx" },
-      { key: "LikedBrands", file: "LikedBrands.jsx" },
-      { key: "ShortlistBrands", file: "ShortlistBrands.jsx" },
-      { key: "ViewBrands", file: "ViewBrands.jsx" },
       { key: "ToTrendingBrands", file: "ToTrendingBrands.jsx" },
       { key: "FindFranchiseLocations", file: "FindFranchiseLocations.jsx" },
     ];
@@ -378,7 +382,6 @@ const useDynamicComponents = () => {
     entries.forEach(({ key, file }) => {
       const path = `../../Components/HomePage_VideoSection/${file}`;
       console.log("Checking for module:", path);
-
 
       // Only if the module exists, create a lazy component
       if (path in modules) {
