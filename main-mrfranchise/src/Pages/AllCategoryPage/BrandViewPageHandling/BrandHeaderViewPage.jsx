@@ -199,7 +199,7 @@ const BrandHeader = ({
                     startIcon={<Phone />}
                     onClick={toggleDrawer(true)}
                     sx={{
-                      px: isMobile ? 1 : 1.5,
+                      px: isMobile ? 0 : 1.5,
                       py: isMobile ? 1 : 2,
                       bgcolor: "#ff9800",
                       "&:hover": { bgcolor: "#e65100" },
@@ -247,6 +247,11 @@ const BrandHeader = ({
                   <ShareDialogActions
                     anchorEl={anchorEl}
                     setAnchorEl={setAnchorEl}
+                    brand={{
+                      name: brand[0]?.brandDetails?.brandName,
+                      logo: brand[0]?.uploads?.logo,
+                      // video: brand[0]?.uploads?.franchisePromotionVideo
+                    }}
                   />
                 </Box>
               </Box>
