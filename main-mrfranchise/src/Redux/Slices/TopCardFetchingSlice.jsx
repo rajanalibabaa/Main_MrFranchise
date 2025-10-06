@@ -150,7 +150,7 @@ export const homeSection5 = createAsyncThunk(
   async ({ page = 1 }, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}overAllPlatformOnlyMainCategory?main=Fashion %26 Lifestyle`,
+        `${API_BASE_URL}/overAllPlatformOnlyMainCategory?main=Fashion %26 Lifestyle`,
         {
           params: { page, id: userId },
         }
