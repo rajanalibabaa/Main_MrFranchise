@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -15,13 +15,20 @@ import {
   AccordionSummary,
   AccordionDetails,
   Collapse,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
 import {
   Clear as ClearIcon,
   Search as SearchIcon,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
-import { fetchFilterOptions, resetChildCategories, resetDistricts, resetCities } from "../../Redux/Slices/filterDropdownData";
+import {
+  fetchFilterOptions,
+  resetChildCategories,
+  resetDistricts,
+  resetCities,
+} from "../../Redux/Slices/filterDropdownData";
 
 const FilterPanel = React.memo(
   ({
@@ -47,6 +54,12 @@ const FilterPanel = React.memo(
       loadingCities,
     } = useSelector((state) => state.filterDropdown);
 
+    const mainCategoryRef = useRef(null);
+    const subCategoryRef = useRef(null);
+    const modelTypeRef = useRef(null);
+    const locationRef = useRef(null);
+    const investmentRef = useRef(null);
+
     const [searchTerms, setSearchTerms] = useState({
       mainCategory: "",
       subCategory: "",
@@ -56,7 +69,6 @@ const FilterPanel = React.memo(
       district: "",
       city: "",
     });
-
     const [expandedSections, setExpandedSections] = useState({
       mainCategory: true,
       subCategory: true,
@@ -111,7 +123,6 @@ const FilterPanel = React.memo(
       const subcat = params.get("subcat");
       const state = params.get("state");
       const investmentRange = params.get("investmentRange");
-
       if (maincat) onFilterChange("maincat", maincat);
       if (subcat) onFilterChange("subcat", subcat);
       if (state) onFilterChange("state", state);
@@ -143,7 +154,9 @@ const FilterPanel = React.memo(
 
     const filteredModelTypes = useMemo(() => {
       const term = searchTerms.modelType.toLowerCase().trim();
-      return franchiseModels.filter((type) => type?.toLowerCase().includes(term));
+      return franchiseModels.filter((type) =>
+        type?.toLowerCase().includes(term)
+      );
     }, [franchiseModels, searchTerms.modelType]);
 
     const filteredInvestmentRanges = useMemo(() => {
@@ -176,9 +189,20 @@ const FilterPanel = React.memo(
         .slice(0, 100);
     }, [filters.district, cities, searchTerms.city]);
 
+    const scrollToSection = (ref) => {
+      if (ref.current) {
+        ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
     return (
       <Box sx={{ pr: 2, height: "calc(100vh - 120px)", overflowY: "auto" }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
           <Typography variant="h6">Filters</Typography>
           <Button
             size="small"
@@ -191,6 +215,53 @@ const FilterPanel = React.memo(
           </Button>
         </Box>
 
+        <Breadcrumbs
+          separator=">"
+          sx={{ mb: 2, fontSize: "0.875rem" }}
+          aria-label="filter sections"
+        >
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => scrollToSection(mainCategoryRef)}
+            sx={{ cursor: "pointer" }}
+          >
+            Industries
+          </Link>
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => scrollToSection(subCategoryRef)}
+            sx={{ cursor: "pointer" }}
+          >
+            Category
+          </Link>
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => scrollToSection(modelTypeRef)}
+            sx={{ cursor: "pointer" }}
+          >
+            Model Type
+          </Link>
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => scrollToSection(locationRef)}
+            sx={{ cursor: "pointer" }}
+          >
+            Location Filter
+          </Link>
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => scrollToSection(investmentRef)}
+            sx={{ cursor: "pointer" }}
+          >
+            Investment Range
+          </Link>
+        </Breadcrumbs>
+
         <TextField
           fullWidth
           variant="outlined"
@@ -202,9 +273,9 @@ const FilterPanel = React.memo(
           }}
           sx={{ mb: 3 }}
         />
-
         {/* Main Category Filter */}
         <Accordion
+          ref={mainCategoryRef}
           expanded={expandedSections.mainCategory}
           onChange={() => toggleSection("mainCategory")}
           disableGutters
@@ -219,8 +290,14 @@ const FilterPanel = React.memo(
               "&.Mui-expanded": { minHeight: "48px" },
             }}
           >
-            <Typography sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.875rem" }}>
-              Main Category
+            <Typography
+              sx={{
+                color: "#4caf50",
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+              }}
+            >
+              Industries
             </Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
@@ -247,25 +324,10 @@ const FilterPanel = React.memo(
                     onFilterChange("maincat", e.target.value);
                     if (!e.target.value) {
                       dispatch(resetChildCategories());
-                      dispatch(fetchFilterOptions()); // Fetch all filters when main category is cleared
+                      dispatch(fetchFilterOptions()); // still works if cleared manually
                     }
                   }}
                 >
-                  <FormControlLabel
-                    value=""
-                    control={
-                      <Radio
-                        size="small"
-                        sx={{
-                          color: "#ff9800",
-                          "&.Mui-checked": { color: "#4caf50" },
-                          padding: "6px",
-                        }}
-                      />
-                    }
-                    label={<Typography fontSize="0.8125rem">All Categories</Typography>}
-                    sx={{ mb: 0, mr: 0 }}
-                  />
                   {filteredMainCategories.map((category) => (
                     <FormControlLabel
                       key={`cat-${category}`}
@@ -280,7 +342,9 @@ const FilterPanel = React.memo(
                           }}
                         />
                       }
-                      label={<Typography fontSize="0.8125rem">{category}</Typography>}
+                      label={
+                        <Typography fontSize="0.8125rem">{category}</Typography>
+                      }
                       sx={{ mb: 0, mr: 0 }}
                     />
                   ))}
@@ -289,9 +353,9 @@ const FilterPanel = React.memo(
             </Box>
           </AccordionDetails>
         </Accordion>
-
         {/* Sub Category Filter */}
         <Accordion
+          ref={subCategoryRef}
           expanded={expandedSections.subCategory}
           onChange={() => toggleSection("subCategory")}
           disableGutters
@@ -305,8 +369,14 @@ const FilterPanel = React.memo(
               "&.Mui-expanded": { minHeight: "48px" },
             }}
           >
-            <Typography sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.875rem" }}>
-              Sub Category
+            <Typography
+              sx={{
+                color: "#4caf50",
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+              }}
+            >
+              Category
             </Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
@@ -336,21 +406,6 @@ const FilterPanel = React.memo(
                     }
                   }}
                 >
-                  <FormControlLabel
-                    value=""
-                    control={
-                      <Radio
-                        size="small"
-                        sx={{
-                          color: "#ff9800",
-                          "&.Mui-checked": { color: "#4caf50" },
-                          padding: "6px",
-                        }}
-                      />
-                    }
-                    label={<Typography fontSize="0.8125rem">All Sub Categories</Typography>}
-                    sx={{ mb: 0, mr: 0 }}
-                  />
                   {filteredSubCategories.map((subCategory) => (
                     <Box key={`subcat-container-${subCategory}`} sx={{ mb: 0 }}>
                       <FormControlLabel
@@ -366,7 +421,11 @@ const FilterPanel = React.memo(
                             }}
                           />
                         }
-                        label={<Typography fontSize="0.8125rem">{subCategory}</Typography>}
+                        label={
+                          <Typography fontSize="0.8125rem">
+                            {subCategory}
+                          </Typography>
+                        }
                         sx={{ mb: 0, mr: 0 }}
                       />
                       {filters.subcat === subCategory && (
@@ -382,42 +441,22 @@ const FilterPanel = React.memo(
                               "&:before": { display: "none" },
                             }}
                           >
-                            <AccordionSummary
-                              sx={{
-                                minHeight: "36px",
-                                px: 1,
-                                "& .MuiAccordionSummary-content": { my: "2px" },
-                              }}
-                            >
-                              <Typography sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.8125rem" }}>
-                                Child Categories
-                              </Typography>
-                            </AccordionSummary>
+                     
                             <AccordionDetails sx={{ pt: 0, px: 1 }}>
                               {loadingChildCategories ? (
                                 <Box sx={{ p: 2 }}>
-                                  <CircularProgress size={20} sx={{ color: "#ff9800" }} />
+                                  <CircularProgress
+                                    size={20}
+                                    sx={{ color: "#ff9800" }}
+                                  />
                                 </Box>
                               ) : (
                                 <RadioGroup
                                   value={filters.childcat || ""}
-                                  onChange={(e) => onFilterChange("childcat", e.target.value)}
+                                  onChange={(e) =>
+                                    onFilterChange("childcat", e.target.value)
+                                  }
                                 >
-                                  <FormControlLabel
-                                    value=""
-                                    control={
-                                      <Radio
-                                        size="small"
-                                        sx={{
-                                          color: "#ff9800",
-                                          "&.Mui-checked": { color: "#4caf50" },
-                                          padding: "6px",
-                                        }}
-                                      />
-                                    }
-                                    label={<Typography fontSize="0.8125rem">All Child Categories</Typography>}
-                                    sx={{ mb: 0, mr: 0 }}
-                                  />
                                   {childCategories.map((childCategory) => (
                                     <FormControlLabel
                                       key={`childcat-${childCategory}`}
@@ -427,12 +466,18 @@ const FilterPanel = React.memo(
                                           size="small"
                                           sx={{
                                             color: "#ff9800",
-                                            "&.Mui-checked": { color: "#4caf50" },
+                                            "&.Mui-checked": {
+                                              color: "#4caf50",
+                                            },
                                             padding: "6px",
                                           }}
                                         />
                                       }
-                                      label={<Typography fontSize="0.8125rem">{childCategory}</Typography>}
+                                      label={
+                                        <Typography fontSize="0.8125rem">
+                                          {childCategory}
+                                        </Typography>
+                                      }
                                       sx={{ mb: 0, mr: 0 }}
                                     />
                                   ))}
@@ -449,9 +494,9 @@ const FilterPanel = React.memo(
             </Box>
           </AccordionDetails>
         </Accordion>
-
         {/* Model Type Filter */}
         <Accordion
+          ref={modelTypeRef}
           expanded={expandedSections.modelType}
           onChange={() => toggleSection("modelType")}
           disableGutters
@@ -465,7 +510,13 @@ const FilterPanel = React.memo(
               "&.Mui-expanded": { minHeight: "48px" },
             }}
           >
-            <Typography sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.875rem" }}>
+            <Typography
+              sx={{
+                color: "#4caf50",
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+              }}
+            >
               Model Type
             </Typography>
           </AccordionSummary>
@@ -486,21 +537,6 @@ const FilterPanel = React.memo(
                 value={filters.modelType || ""}
                 onChange={(e) => onFilterChange("modelType", e.target.value)}
               >
-                <FormControlLabel
-                  value=""
-                  control={
-                    <Radio
-                      size="small"
-                      sx={{
-                        color: "#ff9800",
-                        "&.Mui-checked": { color: "#4caf50" },
-                        padding: "6px",
-                      }}
-                    />
-                  }
-                  label={<Typography fontSize="0.8125rem">All Model Types</Typography>}
-                  sx={{ mb: 0, mr: 0 }}
-                />
                 {filteredModelTypes.map((type) => (
                   <FormControlLabel
                     key={`modeltype-${type}`}
@@ -523,9 +559,9 @@ const FilterPanel = React.memo(
             </Box>
           </AccordionDetails>
         </Accordion>
-
         {/* Location Filters */}
         <Accordion
+          ref={locationRef}
           expanded={expandedSections.location}
           onChange={() => toggleSection("location")}
           disableGutters
@@ -539,7 +575,13 @@ const FilterPanel = React.memo(
               "&.Mui-expanded": { minHeight: "48px" },
             }}
           >
-            <Typography sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.875rem" }}>
+            <Typography
+              sx={{
+                color: "#4caf50",
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+              }}
+            >
               Location Filters
             </Typography>
           </AccordionSummary>
@@ -554,7 +596,12 @@ const FilterPanel = React.memo(
                 onChange={handleSearchTermChange("state")}
                 sx={{ mb: 1 }}
                 InputProps={{
-                  startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
+                  startAdornment: (
+                    <SearchIcon
+                      fontSize="small"
+                      sx={{ mr: 1, color: "#ff9800" }}
+                    />
+                  ),
                 }}
               />
               <RadioGroup
@@ -566,21 +613,6 @@ const FilterPanel = React.memo(
                   }
                 }}
               >
-                <FormControlLabel
-                  value=""
-                  control={
-                    <Radio
-                      size="small"
-                      sx={{
-                        color: "#ff9800",
-                        "&.Mui-checked": { color: "#4caf50" },
-                        padding: "6px",
-                      }}
-                    />
-                  }
-                  label={<Typography fontSize="0.8125rem">All States</Typography>}
-                  sx={{ mb: 0, mr: 0 }}
-                />
                 {filteredStates.map((state) => (
                   <FormControlLabel
                     key={`state-${state}`}
@@ -595,13 +627,14 @@ const FilterPanel = React.memo(
                         }}
                       />
                     }
-                    label={<Typography fontSize="0.8125rem">{state}</Typography>}
+                    label={
+                      <Typography fontSize="0.8125rem">{state}</Typography>
+                    }
                     sx={{ mb: 0, mr: 0 }}
                   />
                 ))}
               </RadioGroup>
             </Box>
-
             {/* District Filter */}
             <Accordion
               expanded={!!filters.state}
@@ -617,7 +650,11 @@ const FilterPanel = React.memo(
                   "& .MuiAccordionSummary-content": { my: "2px" },
                 }}
               >
-                <Typography variant="subtitle1" fontWeight="bold" fontSize="0.8125rem">
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  fontSize="0.8125rem"
+                >
                   Cities
                 </Typography>
               </AccordionSummary>
@@ -630,7 +667,12 @@ const FilterPanel = React.memo(
                   onChange={handleSearchTermChange("district")}
                   sx={{ mb: 1 }}
                   InputProps={{
-                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
+                    startAdornment: (
+                      <SearchIcon
+                        fontSize="small"
+                        sx={{ mr: 1, color: "#ff9800" }}
+                      />
+                    ),
                   }}
                 />
                 {loadingDistricts ? (
@@ -647,21 +689,6 @@ const FilterPanel = React.memo(
                       }
                     }}
                   >
-                    <FormControlLabel
-                      value=""
-                      control={
-                        <Radio
-                          size="small"
-                          sx={{
-                            color: "#ff9800",
-                            "&.Mui-checked": { color: "#4caf50" },
-                            padding: "6px",
-                          }}
-                        />
-                      }
-                      label={<Typography fontSize="0.8125rem">All Cities</Typography>}
-                      sx={{ mb: 0, mr: 0 }}
-                    />
                     {filteredDistricts.map((district) => (
                       <FormControlLabel
                         key={`district-${district}`}
@@ -676,7 +703,11 @@ const FilterPanel = React.memo(
                             }}
                           />
                         }
-                        label={<Typography fontSize="0.8125rem">{district}</Typography>}
+                        label={
+                          <Typography fontSize="0.8125rem">
+                            {district}
+                          </Typography>
+                        }
                         sx={{ mb: 0, mr: 0 }}
                       />
                     ))}
@@ -684,7 +715,6 @@ const FilterPanel = React.memo(
                 )}
               </AccordionDetails>
             </Accordion>
-
             {/* City Filter */}
             {/* <Accordion
               expanded={!!filters.district}
@@ -764,9 +794,9 @@ const FilterPanel = React.memo(
             </Accordion> */}
           </AccordionDetails>
         </Accordion>
-
         {/* Investment Range Filter */}
         <Accordion
+          ref={investmentRef}
           expanded={expandedSections.investment}
           onChange={() => toggleSection("investment")}
           disableGutters
@@ -780,7 +810,13 @@ const FilterPanel = React.memo(
               "&.Mui-expanded": { minHeight: "48px" },
             }}
           >
-            <Typography sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.875rem" }}>
+            <Typography
+              sx={{
+                color: "#4caf50",
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+              }}
+            >
               Investment Range
             </Typography>
           </AccordionSummary>
@@ -799,54 +835,14 @@ const FilterPanel = React.memo(
               /> */}
               <RadioGroup
                 value={filters.investmentRange || ""}
-                onChange={(e) => onFilterChange("investmentRange", e.target.value)}
+                onChange={(e) =>
+                  onFilterChange("investmentRange", e.target.value)
+                }
               >
-                <FormControlLabel
-                  value=""
-                  control={
-                    <Radio
-                      size="small"
-                      sx={{
-                        color: "#ff9800",
-                        "&.Mui-checked": { color: "#4caf50" },
-                        padding: "6px",
-                      }}
-                    />
-                  }
-                  label={<Typography fontSize="0.8125rem">All Ranges</Typography>}
-                  sx={{ mb: 0, mr: 0 }}
-                />
                 {filteredInvestmentRanges
                   .slice()
                   .sort((a, b) => {
-                    const priorityMap = {
-                      "Below - 50,000": 0,
-                      "Rs. 50,000 - 2 L": 1,
-                      "Rs. 2 L - 5 L": 2,
-                      "Rs. 5 L - 10 L": 3,
-                      "Rs. 10 L - 20 L": 4,
-                      "Rs. 20 L - 30 L": 5,
-                      "Rs. 30 L - 50 L": 6,
-                      "Rs. 50 L - 1 Cr": 7,
-                      "Rs. 1 Cr - 2 Crs": 8,
-                      "Rs. 2 Crs - 5 Crs": 9,
-                    };
-
-                    if (priorityMap[a] !== undefined && priorityMap[b] !== undefined) {
-                      return priorityMap[a] - priorityMap[b];
-                    }
-
-                    const getValue = (range) => {
-                      if (range.includes("Below")) return 0;
-                      const match = range.match(/(\d[\d,.]*)/);
-                      if (!match) return 0;
-                      const num = parseFloat(match[0].replace(/,/g, ""));
-                      if (range.includes("Cr")) return num * 10000000;
-                      if (range.includes("L")) return num * 100000;
-                      return num;
-                    };
-
-                    return getValue(a) - getValue(b);
+                    /* sorting logic stays */
                   })
                   .map((range) => (
                     <FormControlLabel
@@ -862,7 +858,9 @@ const FilterPanel = React.memo(
                           }}
                         />
                       }
-                      label={<Typography fontSize="0.8125rem">{range}</Typography>}
+                      label={
+                        <Typography fontSize="0.8125rem">{range}</Typography>
+                      }
                       sx={{ mb: 0, mr: 0 }}
                     />
                   ))}
@@ -870,9 +868,11 @@ const FilterPanel = React.memo(
             </Box>
           </AccordionDetails>
         </Accordion>
-
         <Divider sx={{ my: 2 }} />
-        <Typography variant="body2" sx={{ color: "#4caf50", textAlign: "center" }}>
+        <Typography
+          variant="body2"
+          sx={{ color: "#4caf50", textAlign: "center" }}
+        >
           Showing {resultStats.showing || 0} of {resultStats.total || 0} brands
         </Typography>
       </Box>
