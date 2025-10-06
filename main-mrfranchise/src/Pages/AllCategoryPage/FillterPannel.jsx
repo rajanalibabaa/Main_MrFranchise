@@ -137,11 +137,12 @@ const FilterPanel = React.memo(
       setSearchTerms((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
-    // Filter options based on search terms
+    // Filter and sort options based on search terms (alphabetical order)
     const filteredMainCategories = useMemo(() => {
       const term = searchTerms.mainCategory.toLowerCase();
       return mainCategories
         .filter((main) => main?.toLowerCase().includes(term))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         .slice(0, 100);
     }, [mainCategories, searchTerms.mainCategory]);
 
@@ -149,20 +150,26 @@ const FilterPanel = React.memo(
       const term = searchTerms.subCategory.toLowerCase();
       return subCategories
         .filter((sub) => sub?.toLowerCase().includes(term))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         .slice(0, 100);
     }, [subCategories, searchTerms.subCategory]);
 
+    const sortedChildCategories = useMemo(() => {
+      return [...childCategories].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    }, [childCategories]);
+
     const filteredModelTypes = useMemo(() => {
       const term = searchTerms.modelType.toLowerCase().trim();
-      return franchiseModels.filter((type) =>
-        type?.toLowerCase().includes(term)
-      );
+      return franchiseModels
+        .filter((type) => type?.toLowerCase().includes(term))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     }, [franchiseModels, searchTerms.modelType]);
 
     const filteredInvestmentRanges = useMemo(() => {
       const term = searchTerms.investmentRange.toLowerCase();
       return investmentRanges
         .filter((range) => range?.toLowerCase().includes(term))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         .slice(0, 50);
     }, [investmentRanges, searchTerms.investmentRange]);
 
@@ -170,6 +177,7 @@ const FilterPanel = React.memo(
       const term = searchTerms.state.toLowerCase();
       return states
         .filter((state) => state?.toLowerCase().includes(term))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         .slice(0, 100);
     }, [states, searchTerms.state]);
 
@@ -178,6 +186,7 @@ const FilterPanel = React.memo(
       const term = searchTerms.district.toLowerCase();
       return districts
         .filter((d) => d?.toLowerCase().includes(term))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         .slice(0, 100);
     }, [filters.state, districts, searchTerms.district]);
 
@@ -186,6 +195,7 @@ const FilterPanel = React.memo(
       const term = searchTerms.city.toLowerCase();
       return cities
         .filter((c) => c?.toLowerCase().includes(term))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         .slice(0, 100);
     }, [filters.district, cities, searchTerms.city]);
 
@@ -216,7 +226,7 @@ const FilterPanel = React.memo(
         </Box>
 
         <Breadcrumbs
-          separator=">"
+          separator="|"
           sx={{ mb: 2, fontSize: "0.875rem" }}
           aria-label="filter sections"
         >
@@ -228,14 +238,7 @@ const FilterPanel = React.memo(
           >
             Industries
           </Link>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => scrollToSection(subCategoryRef)}
-            sx={{ cursor: "pointer" }}
-          >
-            Category
-          </Link>
+  
           <Link
             underline="hover"
             color="inherit"
@@ -286,7 +289,6 @@ const FilterPanel = React.memo(
             expandIcon={<ExpandMoreIcon sx={{ color: "#4caf50" }} />}
             sx={{
               px: 1,
-              "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.04)" },
               "&.Mui-expanded": { minHeight: "48px" },
             }}
           >
@@ -302,17 +304,6 @@ const FilterPanel = React.memo(
           </AccordionSummary>
           <AccordionDetails sx={{ p: 0 }}>
             <Box sx={{ px: 1 }}>
-              {/* <TextField
-                fullWidth
-                size="small"
-                placeholder="Search main categories..."
-                value={searchTerms.mainCategory}
-                onChange={handleSearchTermChange("mainCategory")}
-                sx={{ mb: 1 }}
-                InputProps={{
-                  startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
-                }}
-              /> */}
               {loading ? (
                 <Box sx={{ p: 2 }}>
                   <CircularProgress size={20} sx={{ color: "#ff9800" }} />
@@ -324,93 +315,15 @@ const FilterPanel = React.memo(
                     onFilterChange("maincat", e.target.value);
                     if (!e.target.value) {
                       dispatch(resetChildCategories());
-                      dispatch(fetchFilterOptions()); // still works if cleared manually
+                      dispatch(fetchFilterOptions());
                     }
                   }}
                 >
                   {filteredMainCategories.map((category) => (
-                    <FormControlLabel
-                      key={`cat-${category}`}
-                      value={category}
-                      control={
-                        <Radio
-                          size="small"
-                          sx={{
-                            color: "#ff9800",
-                            "&.Mui-checked": { color: "#4caf50" },
-                            padding: "6px",
-                          }}
-                        />
-                      }
-                      label={
-                        <Typography fontSize="0.8125rem">{category}</Typography>
-                      }
-                      sx={{ mb: 0, mr: 0 }}
-                    />
-                  ))}
-                </RadioGroup>
-              )}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-        {/* Sub Category Filter */}
-        <Accordion
-          ref={subCategoryRef}
-          expanded={expandedSections.subCategory}
-          onChange={() => toggleSection("subCategory")}
-          disableGutters
-          elevation={0}
-          sx={{ mb: 2, "&:before": { display: "none" } }}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon sx={{ color: "#4caf50" }} />}
-            sx={{
-              px: 1,
-              "&.Mui-expanded": { minHeight: "48px" },
-            }}
-          >
-            <Typography
-              sx={{
-                color: "#4caf50",
-                fontWeight: "bold",
-                fontSize: "0.875rem",
-              }}
-            >
-              Category
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ p: 0 }}>
-            <Box sx={{ px: 1 }}>
-              {/* <TextField
-                fullWidth
-                size="small"
-                placeholder="Search sub categories..."
-                value={searchTerms.subCategory}
-                onChange={handleSearchTermChange("subCategory")}
-                sx={{ mb: 1 }}
-                InputProps={{
-                  startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
-                }}
-              /> */}
-              {loading ? (
-                <Box sx={{ p: 2 }}>
-                  <CircularProgress size={20} sx={{ color: "#ff9800" }} />
-                </Box>
-              ) : (
-                <RadioGroup
-                  value={filters.subcat || ""}
-                  onChange={(e) => {
-                    onFilterChange("subcat", e.target.value);
-                    if (!e.target.value) {
-                      dispatch(resetChildCategories());
-                    }
-                  }}
-                >
-                  {filteredSubCategories.map((subCategory) => (
-                    <Box key={`subcat-container-${subCategory}`} sx={{ mb: 0 }}>
+                    <Box key={`cat-container-${category}`} sx={{ mb: 0 }}>
                       <FormControlLabel
-                        key={`subcat-${subCategory}`}
-                        value={subCategory}
+                        key={`cat-${category}`}
+                        value={category}
                         control={
                           <Radio
                             size="small"
@@ -423,69 +336,111 @@ const FilterPanel = React.memo(
                         }
                         label={
                           <Typography fontSize="0.8125rem">
-                            {subCategory}
+                            {category}
                           </Typography>
                         }
                         sx={{ mb: 0, mr: 0 }}
                       />
-                      {filters.subcat === subCategory && (
-                        <Collapse in={filters.subcat === subCategory}>
-                          <Accordion
-                            expanded={expandedSections.subCategory}
-                            disableGutters
-                            elevation={0}
-                            sx={{
-                              ml: 3,
-                              mt: 0.5,
-                              backgroundColor: "rgba(0, 0, 0, 0.02)",
-                              "&:before": { display: "none" },
+
+                      {/* Show subcategories when this main category is selected */}
+                      {filters.maincat === category && (
+                        <Box
+                          ref={subCategoryRef}
+                          sx={{
+                            ml: 3,
+                            mt: 1,
+                            // borderLeft: "2px solid #4caf50",
+                            pl: 1,
+                          }}
+                        >
+                          <RadioGroup
+                            value={filters.subcat || ""}
+                            onChange={(e) => {
+                              onFilterChange("subcat", e.target.value);
+                              if (!e.target.value) {
+                                dispatch(resetChildCategories());
+                              }
                             }}
                           >
-                     
-                            <AccordionDetails sx={{ pt: 0, px: 1 }}>
-                              {loadingChildCategories ? (
-                                <Box sx={{ p: 2 }}>
-                                  <CircularProgress
-                                    size={20}
-                                    sx={{ color: "#ff9800" }}
-                                  />
-                                </Box>
-                              ) : (
-                                <RadioGroup
-                                  value={filters.childcat || ""}
-                                  onChange={(e) =>
-                                    onFilterChange("childcat", e.target.value)
-                                  }
-                                >
-                                  {childCategories.map((childCategory) => (
-                                    <FormControlLabel
-                                      key={`childcat-${childCategory}`}
-                                      value={childCategory}
-                                      control={
-                                        <Radio
-                                          size="small"
-                                          sx={{
-                                            color: "#ff9800",
-                                            "&.Mui-checked": {
-                                              color: "#4caf50",
-                                            },
-                                            padding: "6px",
-                                          }}
-                                        />
-                                      }
-                                      label={
-                                        <Typography fontSize="0.8125rem">
-                                          {childCategory}
-                                        </Typography>
-                                      }
-                                      sx={{ mb: 0, mr: 0 }}
+                            {filteredSubCategories.map((subCategory) => (
+                              <Box key={`subcat-container-${subCategory}`} sx={{ mb: 0 }}>
+                                <FormControlLabel
+                                  key={`subcat-${subCategory}`}
+                                  value={subCategory}
+                                  control={
+                                    <Radio
+                                      size="small"
+                                      sx={{
+                                        color: "#ff9800",
+                                        "&.Mui-checked": { color: "#4caf50" },
+                                        padding: "6px",
+                                      }}
                                     />
-                                  ))}
-                                </RadioGroup>
-                              )}
-                            </AccordionDetails>
-                          </Accordion>
-                        </Collapse>
+                                  }
+                                  label={
+                                    <Typography fontSize="0.8125rem">
+                                      {subCategory}
+                                    </Typography>
+                                  }
+                                  sx={{ mb: 0, mr: 0 }}
+                                />
+
+                                {/* Child categories when this specific subcategory is selected */}
+                                {filters.subcat === subCategory && (
+                                  <Box
+                                    sx={{
+                                      ml: 2,
+                                      mt: 1,
+                                      // borderLeft: "2px solid #ff9800",
+                                      pl: 1,
+                                    }}
+                                  >
+                                    {loadingChildCategories ? (
+                                      <Box sx={{ p: 1 }}>
+                                        <CircularProgress
+                                          size={16}
+                                          sx={{ color: "#ff9800" }}
+                                        />
+                                      </Box>
+                                    ) : (
+                                      <RadioGroup
+                                        value={filters.childcat || ""}
+                                        onChange={(e) =>
+                                          onFilterChange("childcat", e.target.value)
+                                        }
+                                      >
+                                        {sortedChildCategories.map((childCategory) => (
+                                          <FormControlLabel
+                                            key={`childcat-${childCategory}`}
+                                            value={childCategory}
+                                            control={
+                                              <Radio
+                                                size="small"
+                                                sx={{
+                                                  color: "#ff9800",
+                                                  "&.Mui-checked": {
+                                                    color: "#4caf50",
+                                                  },
+                                                  padding: "6px",
+                                                }}
+                                              />
+                                            }
+                                            label={
+                                              <Typography fontSize="0.8125rem">
+                                                {childCategory}
+                                              </Typography>
+                                            }
+                                            sx={{ mb: 0.5, mr: 0 }}
+                                          />
+                                        ))}
+                                      </RadioGroup>
+                                    )}
+                                  </Box>
+                                )}
+                              </Box>
+                            ))}
+                          </RadioGroup>
+                        </Box>
                       )}
                     </Box>
                   ))}
@@ -494,6 +449,7 @@ const FilterPanel = React.memo(
             </Box>
           </AccordionDetails>
         </Accordion>
+
         {/* Model Type Filter */}
         <Accordion
           ref={modelTypeRef}
@@ -585,9 +541,10 @@ const FilterPanel = React.memo(
               Location Filters
             </Typography>
           </AccordionSummary>
+
           <AccordionDetails sx={{ p: 0 }}>
-            {/* State Filter */}
-            <Box sx={{ px: 1, mb: 1 }}>
+            <Box sx={{ px: 1 }}>
+              {/* 🔍 State Search */}
               <TextField
                 fullWidth
                 size="small"
@@ -604,95 +561,27 @@ const FilterPanel = React.memo(
                   ),
                 }}
               />
-              <RadioGroup
-                value={filters.state || ""}
-                onChange={(e) => {
-                  onFilterChange("state", e.target.value);
-                  if (!e.target.value) {
-                    dispatch(resetDistricts());
-                  }
-                }}
-              >
-                {filteredStates.map((state) => (
-                  <FormControlLabel
-                    key={`state-${state}`}
-                    value={state}
-                    control={
-                      <Radio
-                        size="small"
-                        sx={{
-                          color: "#ff9800",
-                          "&.Mui-checked": { color: "#4caf50" },
-                          padding: "6px",
-                        }}
-                      />
+
+              {loading ? (
+                <Box sx={{ p: 2 }}>
+                  <CircularProgress size={20} sx={{ color: "#ff9800" }} />
+                </Box>
+              ) : (
+                <RadioGroup
+                  value={filters.state || ""}
+                  onChange={(e) => {
+                    onFilterChange("state", e.target.value);
+                    if (!e.target.value) {
+                      dispatch(resetDistricts());
                     }
-                    label={
-                      <Typography fontSize="0.8125rem">{state}</Typography>
-                    }
-                    sx={{ mb: 0, mr: 0 }}
-                  />
-                ))}
-              </RadioGroup>
-            </Box>
-            {/* District Filter */}
-            <Accordion
-              expanded={!!filters.state}
-              disabled={!filters.state}
-              elevation={0}
-              sx={{ mb: 1, "&:before": { display: "none" } }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon sx={{ fontSize: "1rem" }} />}
-                sx={{
-                  minHeight: "36px",
-                  px: 1,
-                  "& .MuiAccordionSummary-content": { my: "2px" },
-                }}
-              >
-                <Typography
-                  variant="subtitle1"
-                  fontWeight="bold"
-                  fontSize="0.8125rem"
-                >
-                  Cities
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{ px: 1 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Search districts..."
-                  value={searchTerms.district}
-                  onChange={handleSearchTermChange("district")}
-                  sx={{ mb: 1 }}
-                  InputProps={{
-                    startAdornment: (
-                      <SearchIcon
-                        fontSize="small"
-                        sx={{ mr: 1, color: "#ff9800" }}
-                      />
-                    ),
                   }}
-                />
-                {loadingDistricts ? (
-                  <Box sx={{ p: 2 }}>
-                    <CircularProgress size={20} sx={{ color: "#ff9800" }} />
-                  </Box>
-                ) : (
-                  <RadioGroup
-                    value={filters.district || ""}
-                    onChange={(e) => {
-                      onFilterChange("district", e.target.value);
-                      if (!e.target.value) {
-                        dispatch(resetCities());
-                      }
-                    }}
-                  >
-                    {filteredDistricts.map((district) => (
+                >
+                  {filteredStates.map((state) => (
+                    <Box key={`state-box-${state}`} sx={{ mb: 0.5 }}>
+                      {/* ✅ State Row */}
                       <FormControlLabel
-                        key={`district-${district}`}
-                        value={district}
+                        key={`state-${state}`}
+                        value={state}
                         control={
                           <Radio
                             size="small"
@@ -704,96 +593,145 @@ const FilterPanel = React.memo(
                           />
                         }
                         label={
-                          <Typography fontSize="0.8125rem">
-                            {district}
-                          </Typography>
+                          <Typography fontSize="0.8125rem">{state}</Typography>
                         }
                         sx={{ mb: 0, mr: 0 }}
                       />
-                    ))}
-                  </RadioGroup>
-                )}
-              </AccordionDetails>
-            </Accordion>
-            {/* City Filter */}
-            {/* <Accordion
-              expanded={!!filters.district}
-              disabled={!filters.district}
-              elevation={0}
-              sx={{ "&:before": { display: "none" } }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon sx={{ fontSize: "1rem" }} />}
-                sx={{
-                  minHeight: "36px",
-                  px: 1,
-                  "& .MuiAccordionSummary-content": { my: "2px" },
-                }}
-              >
-                <Typography variant="subtitle1" fontWeight="bold" fontSize="0.8125rem">
-                  Cities
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{ px: 1 }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Search cities..."
-                  value={searchTerms.city}
-                  onChange={handleSearchTermChange("city")}
-                  sx={{ mb: 1 }}
-                  InputProps={{
-                    startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
-                  }}
-                />
-                {loadingCities ? (
-                  <Box sx={{ p: 2 }}>
-                    <CircularProgress size={20} sx={{ color: "#ff9800" }} />
-                  </Box>
-                ) : (
-                  <RadioGroup
-                    value={filters.city || ""}
-                    onChange={(e) => onFilterChange("city", e.target.value)}
-                  >
-                    <FormControlLabel
-                      value=""
-                      control={
-                        <Radio
-                          size="small"
+
+                      {/* ✅ Show Districts only when this state is selected */}
+                      {filters.state === state && (
+                        <Box
                           sx={{
-                            color: "#ff9800",
-                            "&.Mui-checked": { color: "#4caf50" },
-                            padding: "6px",
+                            ml: 3,
+                            mt: 0.5,
+                            pl: 1,
+                            // borderLeft: "2px solid #4caf50",
                           }}
-                        />
-                      }
-                      label={<Typography fontSize="0.8125rem">All Cities</Typography>}
-                      sx={{ mb: 0, mr: 0 }}
-                    />
-                    {filteredCities.map((city) => (
-                      <FormControlLabel
-                        key={`city-${city}`}
-                        value={city}
-                        control={
-                          <Radio
-                            size="small"
-                            sx={{
-                              color: "#ff9800",
-                              "&.Mui-checked": { color: "#4caf50" },
-                              padding: "6px",
-                            }}
-                          />
-                        }
-                        label={<Typography fontSize="0.8125rem">{city}</Typography>}
-                        sx={{ mb: 0, mr: 0 }}
-                      />
-                    ))}
-                  </RadioGroup>
-                )}
-              </AccordionDetails>
-            </Accordion> */}
+                        >
+                          {loadingDistricts ? (
+                            <Box sx={{ p: 1 }}>
+                              <CircularProgress
+                                size={16}
+                                sx={{ color: "#ff9800" }}
+                              />
+                            </Box>
+                          ) : (
+                            <>
+                              <TextField
+                                fullWidth
+                                size="small"
+                                placeholder="Search districts..."
+                                value={searchTerms.district}
+                                onChange={handleSearchTermChange("district")}
+                                sx={{ mb: 1 }}
+                                InputProps={{
+                                  startAdornment: (
+                                    <SearchIcon
+                                      fontSize="small"
+                                      sx={{ mr: 1, color: "#ff9800" }}
+                                    />
+                                  ),
+                                }}
+                              />
+
+                              <RadioGroup
+                                value={filters.district || ""}
+                                onChange={(e) => {
+                                  onFilterChange("district", e.target.value);
+                                  if (!e.target.value) {
+                                    dispatch(resetCities());
+                                  }
+                                }}
+                              >
+                                {filteredDistricts.map((district) => (
+                                  <FormControlLabel
+                                    key={`district-${district}`}
+                                    value={district}
+                                    control={
+                                      <Radio
+                                        size="small"
+                                        sx={{
+                                          color: "#ff9800",
+                                          "&.Mui-checked": { color: "#4caf50" },
+                                          padding: "6px",
+                                        }}
+                                      />
+                                    }
+                                    label={
+                                      <Typography fontSize="0.8125rem">
+                                        {district}
+                                      </Typography>
+                                    }
+                                    sx={{ mb: 0.5, mr: 0 }}
+                                  />
+                                ))}
+                              </RadioGroup>
+
+                              {/* Show Cities when district is selected */}
+                              {filters.district && (
+                                <Box
+                                  sx={{
+                                    ml: 2,
+                                    mt: 1,
+                                    pl: 1,
+                                  }}
+                                >
+                                  {loadingCities ? (
+                                    <Box sx={{ p: 1 }}>
+                                      <CircularProgress
+                                        size={16}
+                                        sx={{ color: "#ff9800" }}
+                                      />
+                                    </Box>
+                                  ) : (
+                                    <>
+                                    
+
+                                      <RadioGroup
+                                        value={filters.city || ""}
+                                        onChange={(e) =>
+                                          onFilterChange("city", e.target.value)
+                                        }
+                                      >
+                                        {/* {filteredCities.map((city) => (
+                                          <FormControlLabel
+                                            key={`city-${city}`}
+                                            value={city}
+                                            control={
+                                              <Radio
+                                                size="small"
+                                                sx={{
+                                                  color: "#ff9800",
+                                                  "&.Mui-checked": { color: "#4caf50" },
+                                                  padding: "6px",
+                                                }}
+                                              />
+                                            }
+                                            label={
+                                              <Typography fontSize="0.8125rem">
+                                                {city}
+                                              </Typography>
+                                            }
+                                            sx={{ mb: 0.5, mr: 0 }}
+                                          />
+                                        ))} */}
+                                      </RadioGroup>
+                                    </>
+                                  )}
+                                </Box>
+                              )}
+                            </>
+                          )}
+                        </Box>
+                      )}
+                    </Box>
+                  ))}
+                </RadioGroup>
+              )}
+            </Box>
           </AccordionDetails>
         </Accordion>
+
         {/* Investment Range Filter */}
         <Accordion
           ref={investmentRef}
@@ -839,31 +777,26 @@ const FilterPanel = React.memo(
                   onFilterChange("investmentRange", e.target.value)
                 }
               >
-                {filteredInvestmentRanges
-                  .slice()
-                  .sort((a, b) => {
-                    /* sorting logic stays */
-                  })
-                  .map((range) => (
-                    <FormControlLabel
-                      key={`range-${range}`}
-                      value={range}
-                      control={
-                        <Radio
-                          size="small"
-                          sx={{
-                            color: "#ff9800",
-                            "&.Mui-checked": { color: "#4caf50" },
-                            padding: "6px",
-                          }}
-                        />
-                      }
-                      label={
-                        <Typography fontSize="0.8125rem">{range}</Typography>
-                      }
-                      sx={{ mb: 0, mr: 0 }}
-                    />
-                  ))}
+                {filteredInvestmentRanges.map((range) => (
+                  <FormControlLabel
+                    key={`range-${range}`}
+                    value={range}
+                    control={
+                      <Radio
+                        size="small"
+                        sx={{
+                          color: "#ff9800",
+                          "&.Mui-checked": { color: "#4caf50" },
+                          padding: "6px",
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography fontSize="0.8125rem">{range}</Typography>
+                    }
+                    sx={{ mb: 0, mr: 0 }}
+                  />
+                ))}
               </RadioGroup>
             </Box>
           </AccordionDetails>
