@@ -15,14 +15,12 @@ import { Fade } from "@mui/material";
 import { keyframes } from "@emotion/react";
 
 const FranchiseDetailsTable = ({ ficoDetails, formatCurrency }) => {
-  
   const [selectedModel, setSelectedModel] = useState(null);
   const containerRef = useRef(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const [hasHoveredOnce, setHasHoveredOnce] = useState(false);
 
   const tableRows = ficoDetails.map((model, index) => (
-    
     <Fade in={true} key={model._id || index} timeout={index * 100}>
       <TableRow
         hover
@@ -52,7 +50,7 @@ const FranchiseDetailsTable = ({ ficoDetails, formatCurrency }) => {
             sx={{
               borderBottom: "1px solid rgba(0,0,0,0.05)",
               padding: "16px",
-              minWidth: j === 0 ? "180px" : "120px", // Adjust minimum widths as needed
+              minWidth: j === 0 ? "180px" : "170px", // Adjust minimum widths as needed
               maxWidth: "200px",
               whiteSpace: "normal",
               wordBreak: "break-word",
@@ -108,9 +106,11 @@ const FranchiseDetailsTable = ({ ficoDetails, formatCurrency }) => {
     "&:active": { cursor: "grabbing" },
     "&::-webkit-scrollbar": {
       height: "8px",
+      backgroundColor: "#f1f1f1",
     },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#7ad03a",
+
       borderRadius: "4px",
     },
   }}
