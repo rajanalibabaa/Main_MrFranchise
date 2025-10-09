@@ -18,10 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchFilterOptions,
-  resetChildCategories,
-  resetDistricts,
-  resetCities,
-  clearErrors,
+   clearErrors,
+
 } from "../../Redux/Slices/filterDropdownData";
 
 const FilterDropdowns = ({ onFilterChange }) => {
@@ -37,6 +35,7 @@ const FilterDropdowns = ({ onFilterChange }) => {
 
   // Get filter data from Redux store
   const {
+    mainCategories,
     subCategories,
     states,
     investmentRanges,
@@ -44,9 +43,11 @@ const FilterDropdowns = ({ onFilterChange }) => {
     error,
   } = useSelector((state) => state.filterDropdown);
 
+
   // Fetch initial filter options when component mounts
   useEffect(() => {
     dispatch(fetchFilterOptions());
+      
     return () => {
       dispatch(clearErrors());
     };
@@ -181,21 +182,21 @@ const handleFindBrands = useCallback(() => {
     >
       {/* Category Filter */}
       <FormControl fullWidth sx={{ minWidth: 180 }}>
-        <InputLabel>Category</InputLabel>
+        <InputLabel>Industry</InputLabel>
         <Select
           value={filters.selectedSubCategory}
           onChange={(e) =>
             handleFilterChange("selectedSubCategory", e.target.value)
           }
-          label="Category"
+          label="Industry"
           MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
           sx={{
             backgroundColor: "white",
             borderRadius: 1,
           }}
         >
-          <MenuItem value="">All Categories</MenuItem>
-          {subCategories.map((category) => (
+          <MenuItem value="">Industry</MenuItem>
+          {mainCategories.map((category) => (
             <MenuItem key={category} value={category}>
               {category}
             </MenuItem>

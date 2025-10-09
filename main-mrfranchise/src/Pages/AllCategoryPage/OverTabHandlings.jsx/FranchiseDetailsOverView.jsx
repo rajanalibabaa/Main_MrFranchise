@@ -15,12 +15,14 @@ import { Fade } from "@mui/material";
 import { keyframes } from "@emotion/react";
 
 const FranchiseDetailsTable = ({ ficoDetails, formatCurrency }) => {
+  
   const [selectedModel, setSelectedModel] = useState(null);
   const containerRef = useRef(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const [hasHoveredOnce, setHasHoveredOnce] = useState(false);
 
   const tableRows = ficoDetails.map((model, index) => (
+    
     <Fade in={true} key={model._id || index} timeout={index * 100}>
       <TableRow
         hover

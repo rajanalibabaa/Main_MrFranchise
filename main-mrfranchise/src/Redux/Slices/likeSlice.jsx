@@ -64,7 +64,9 @@ export const fetchLikedBrandsById = createAsyncThunk(
       // console.log(url);
 
       const response = await getApi(url, token);
+      // const response = await getApi(url, token);
 
+      console.log("...", response.data?.data)
       console.log("...", response.data?.data)
 
       const responseData = response.data?.data;
@@ -75,6 +77,7 @@ export const fetchLikedBrandsById = createAsyncThunk(
         pagination: responseData.pagination || {
           currentPage: page,
           totalPages: 1,
+          total: 0,
           total: 0,
           limit,
           hasNext: false,
@@ -90,6 +93,7 @@ export const fetchLikedBrandsById = createAsyncThunk(
 const initialState = {
   brands: [],
   pagination: {
+    total: 0,
     total: 0,
     currentPage: 1,
     totalPages: 1,
@@ -113,11 +117,13 @@ const likedBrandsSlice = createSlice({
         (brand) => brand.uuid !== action.payload
       );
       state.pagination.total -= 1;
+      state.pagination.total -= 1;
     },
 
     addLikedBrand: (state, action) => {
       const brand = { ...action.payload, isLiked: true };
       state.brands.unshift(brand);
+      state.pagination.total = state.pagination.total + 1;
       state.pagination.total = state.pagination.total + 1;
     },
 
@@ -153,6 +159,7 @@ const likedBrandsSlice = createSlice({
           ...state.pagination,
           ...action.payload.pagination,
           total: action.payload.pagination.total,
+          total: action.payload.pagination.total,
         };
       })
 
@@ -165,6 +172,7 @@ const likedBrandsSlice = createSlice({
         state.brands = state.brands.filter(
           (brand) => brand.uuid !== action.payload
         );
+        state.pagination.total -=1;
         state.pagination.total -=1;
       })
 
