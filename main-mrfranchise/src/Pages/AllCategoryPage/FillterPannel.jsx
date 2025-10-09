@@ -45,6 +45,7 @@ const FilterPanel = React.memo(
       childCategories,
       franchiseModels,
       investmentRanges,
+      areaRequired,
       states,
       districts,
       cities,
@@ -59,12 +60,14 @@ const FilterPanel = React.memo(
     const modelTypeRef = useRef(null);
     const locationRef = useRef(null);
     const investmentRef = useRef(null);
+    const areaRequiredRef = useRef(null);
 
     const [searchTerms, setSearchTerms] = useState({
       mainCategory: "",
       subCategory: "",
       modelType: "",
       investmentRange: "",
+      areaRequired: "",
       state: "",
       district: "",
       city: "",
@@ -75,6 +78,7 @@ const FilterPanel = React.memo(
       modelType: true,
       location: true,
       investment: true,
+      areaRequired: true,
     });
 
     // Fetch initial filter data
@@ -123,10 +127,13 @@ const FilterPanel = React.memo(
       const subcat = params.get("subcat");
       const state = params.get("state");
       const investmentRange = params.get("investmentRange");
+      const areaRequiredParam = params.get("areaRequired");
+
       if (maincat) onFilterChange("maincat", maincat);
       if (subcat) onFilterChange("subcat", subcat);
       if (state) onFilterChange("state", state);
       if (investmentRange) onFilterChange("investmentRange", investmentRange);
+      if (areaRequiredParam) onFilterChange("areaRequired", areaRequiredParam);
     }, [onFilterChange]);
 
     const toggleSection = (section) => {
@@ -172,6 +179,13 @@ const FilterPanel = React.memo(
         .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         .slice(0, 50);
     }, [investmentRanges, searchTerms.investmentRange]);
+
+    const filteredAreaRequired = useMemo(() => {
+      const term = searchTerms.areaRequired.toLowerCase();
+      return areaRequired
+        .filter((area) => area?.toLowerCase().includes(term))
+        .slice(0, 50);
+    }, [areaRequired, searchTerms.areaRequired]);
 
     const filteredStates = useMemo(() => {
       const term = searchTerms.state.toLowerCase();
@@ -262,6 +276,14 @@ const FilterPanel = React.memo(
             sx={{ cursor: "pointer" }}
           >
             Investment Range
+          </Link>
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => scrollToSection(areaRequiredRef)}
+            sx={{ cursor: "pointer" }}
+          >
+            Area Required
           </Link>
         </Breadcrumbs>
 
@@ -801,6 +823,94 @@ const FilterPanel = React.memo(
             </Box>
           </AccordionDetails>
         </Accordion>
+
+        {/* Area Required Filter */}
+<Accordion
+  ref={areaRequiredRef}
+  expanded={expandedSections.areaRequired}
+  onChange={() => toggleSection("areaRequired")}
+  disableGutters
+  elevation={0}
+  sx={{ mb: 2, "&:before": { display: "none" } }}
+>
+  <AccordionSummary
+    expandIcon={<ExpandMoreIcon sx={{ color: "#4caf50" }} />}
+    sx={{
+      px: 1,
+      "&.Mui-expanded": { minHeight: "48px" },
+    }}
+  >
+    <Typography
+      sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.875rem" }}
+    >
+      Area Required
+    </Typography>
+  </AccordionSummary>
+
+  <AccordionDetails sx={{ p: 0 }}>
+    <Box sx={{ px: 1 }}>
+      <RadioGroup
+        value={filters.areaRequired || ""}
+        onChange={(e) => onFilterChange("areaRequired", e.target.value)}
+      >
+        <FormControlLabel
+          value=""
+          control={
+            <Radio
+              size="small"
+              sx={{
+                color: "#ff9800",
+                "&.Mui-checked": { color: "#4caf50" },
+                padding: "6px",
+              }}
+            />
+          }
+          label={<Typography fontSize="0.8125rem">All Areas</Typography>}
+          sx={{ mb: 0, mr: 0 }}
+        />
+
+        {[...filteredAreaRequired]
+          .slice()
+          .sort((a, b) => {
+            /**
+             * Helper to extract numeric area (in sq ft)
+             * Handles formats like "500 - 1000 sq ft", "800 SQ.FT", "1,000 Sq.Ft.", etc.
+             */
+            const extractNumber = (text) => {
+              if (!text) return 0;
+              const match = text.match(/\d[\d,]*/g);
+              if (!match) return 0;
+              const numbers = match.map((n) => parseFloat(n.replace(/,/g, "")));
+              return numbers.length === 2
+                ? (numbers[0] + numbers[1]) / 2 // take average of range
+                : numbers[0];
+            };
+
+            return extractNumber(a) - extractNumber(b);
+          })
+          .map((area) => (
+            <FormControlLabel
+              key={`area-${area}`}
+              value={area}
+              control={
+                <Radio
+                  size="small"
+                  sx={{
+                    color: "#ff9800",
+                    "&.Mui-checked": { color: "#4caf50" },
+                    padding: "6px",
+                  }}
+                />
+              }
+              label={<Typography fontSize="0.8125rem">{area}</Typography>}
+              sx={{ mb: 0, mr: 0 }}
+            />
+          ))}
+      </RadioGroup>
+    </Box>
+  </AccordionDetails>
+</Accordion>
+
         <Divider sx={{ my: 2 }} />
         <Typography
           variant="body2"
