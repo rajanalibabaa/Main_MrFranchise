@@ -1,18 +1,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/v1/';
+const API_BASE_URL = 'https://mrfranchisebackend.mrfranchise.in/api/v1/';
 
 // Async thunk for fetching all filter options
 export const fetchFilterOptions = createAsyncThunk(
   'filterDropdown/fetchFilterOptions',
   async (params = {}, { rejectWithValue }) => {
     try {
-      const { sub, state, district, main } = params;
+      const { sub, state, district, main, areaRequired } = params;
       const queryParams = new URLSearchParams();
 
       if (sub) queryParams.append('sub', sub);
       if (state) queryParams.append('state', state);
+            if (areaRequired) queryParams.append('areaRequired', areaRequired);
+
       if (district) queryParams.append('district', district);
       if (main) queryParams.append('main', main);
 
@@ -31,6 +33,7 @@ const initialState = {
   childCategories: [],
   investmentRanges: [],
   franchiseModels: [],
+  areaRequired: [],
   states: [],
   districts: [],
   cities: [],
@@ -82,6 +85,9 @@ const filterDropdownSlice = createSlice({
         if (params.state) {
           state.loadingDistricts = true;
         }
+        if (params.areaRequired) {
+          state.loadingAreaRequired = true;
+        }
         if (params.district) {
           state.loadingCities = true;
         }
@@ -104,12 +110,19 @@ const filterDropdownSlice = createSlice({
           // Cities response
           state.cities = action.payload;
           state.loadingCities = false;
-        } else if (params.main) {
+        }
+        else if (params.areaRequired) {
+          // Area Required response
+          state.areaRequired = action.payload;
+          state.loadingAreaRequired = false;
+        }
+        else if (params.main) {
           // Subcategories and other filtered options for selected main category
           state.subCategories = action.payload.subcat || [];
           state.investmentRanges = action.payload.investmentRange || [];
           state.franchiseModels = action.payload.franchiseModel || [];
           state.states = action.payload.states || [];
+          state.areaRequired = action.payload.areaRequired || [];
           // Optionally set childCategories if you want all children under main (but UI fetches per sub)
           // state.childCategories = action.payload.childcat || [];
           state.loading = false;
@@ -120,6 +133,7 @@ const filterDropdownSlice = createSlice({
           state.investmentRanges = action.payload.investmentRange || [];
           state.franchiseModels = action.payload.franchiseModel || [];
           state.states = action.payload.states || [];
+          state.areaRequired = action.payload.areaRequired || [];
           state.loading = false;
 
           console.log("Fetched all filter options:", action.payload);
@@ -137,6 +151,9 @@ const filterDropdownSlice = createSlice({
         } else if (params.district) {
           state.citiesError = action.payload;
           state.loadingCities = false;
+        } else if (params.areaRequired) {
+          state.areaRequiredError = action.payload;
+          state.loadingAreaRequired = false;
         } else if (params.main) {
           state.error = action.payload;
           state.loading = false;
