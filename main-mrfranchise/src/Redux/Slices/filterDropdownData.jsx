@@ -36,7 +36,6 @@ const initialState = {
   investmentRanges: [],
   areaRequired: [],
   franchiseModels: [],
-  areaRequired: [],
   states: [],
   districts: [],
   cities: [],

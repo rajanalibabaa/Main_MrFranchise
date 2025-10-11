@@ -77,7 +77,6 @@ export const fetchLikedBrandsById = createAsyncThunk(
           currentPage: page,
           totalPages: 1,
           total: 0,
-          total: 0,
           limit,
           hasNext: false,
         },
@@ -92,7 +91,6 @@ export const fetchLikedBrandsById = createAsyncThunk(
 const initialState = {
   brands: [],
   pagination: {
-    total: 0,
     total: 0,
     currentPage: 1,
     totalPages: 1,
