@@ -180,29 +180,35 @@ const FilterDropdowns = ({ onFilterChange }) => {
         boxShadow: 1,
       }}
     >
-      {/* Industry Filter */}
-      <FormControl fullWidth sx={{ minWidth: 180 }}>
-        <InputLabel>Industry</InputLabel>
-        <Select
-          value={filters.selectedMainCategory}
-          onChange={(e) =>
-            handleFilterChange("selectedMainCategory", e.target.value)
-          }
-          label="Industry"
-          MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-          sx={{
-            backgroundColor: "white",
-            borderRadius: 1,
-          }}
-        >
-          <MenuItem value="">All Industries</MenuItem>
-          {mainCategories.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    {/* Industry Filter */}
+<FormControl fullWidth sx={{ minWidth: 180 }}>
+  <InputLabel>Industry</InputLabel>
+  <Select
+    value={filters.selectedMainCategory}
+    onChange={(e) =>
+      handleFilterChange("selectedMainCategory", e.target.value)
+    }
+    label="Industry"
+    MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
+    sx={{
+      backgroundColor: "white",
+      borderRadius: 1,
+    }}
+  >
+    <MenuItem value="">All Industries</MenuItem>
+
+    {[...mainCategories]
+      .sort((a, b) =>
+        (a || "").localeCompare(b || "", undefined, { sensitivity: "base" })
+      )
+      .map((category) => (
+        <MenuItem key={category} value={category}>
+          {category}
+        </MenuItem>
+      ))}
+  </Select>
+</FormControl>
+
 
       {/* Investment Range Filter */}
       <FormControl fullWidth sx={{ minWidth: 180 }}>
