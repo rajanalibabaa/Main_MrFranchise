@@ -16,10 +16,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchFilterOptions,
-  resetChildCategories,
-  resetDistricts,
-  resetCities,
-  clearErrors,
+   clearErrors,
+
 } from "../../Redux/Slices/filterDropdownData";
 
 const FilterDropdowns = ({ onFilterChange }) => {
@@ -43,9 +41,11 @@ const FilterDropdowns = ({ onFilterChange }) => {
     error,
   } = useSelector((state) => state.filterDropdown);
 
+
   // Fetch initial filter options when component mounts
   useEffect(() => {
     dispatch(fetchFilterOptions());
+      
     return () => {
       dispatch(clearErrors());
     };

@@ -55,7 +55,7 @@ export const fetchLikedBrandsById = createAsyncThunk(
     
 
       const query = { page, limit };
-      const baseUrl = "http://localhost:5000/api/v1/like";
+      const baseUrl = "https://mrfranchisebackend.mrfranchise.in/api/v1/like";
 
       const queryString = new URLSearchParams(query).toString();
 
@@ -64,6 +64,7 @@ export const fetchLikedBrandsById = createAsyncThunk(
       // console.log(url);
 
       const response = await getApi(url, token);
+      // const response = await getApi(url, token);
 
       console.log("...", response.data?.data)
 
@@ -75,6 +76,7 @@ export const fetchLikedBrandsById = createAsyncThunk(
         pagination: responseData.pagination || {
           currentPage: page,
           totalPages: 1,
+          total: 0,
           total: 0,
           limit,
           hasNext: false,
@@ -90,6 +92,7 @@ export const fetchLikedBrandsById = createAsyncThunk(
 const initialState = {
   brands: [],
   pagination: {
+    total: 0,
     total: 0,
     currentPage: 1,
     totalPages: 1,
@@ -113,11 +116,13 @@ const likedBrandsSlice = createSlice({
         (brand) => brand.uuid !== action.payload
       );
       state.pagination.total -= 1;
+      state.pagination.total -= 1;
     },
 
     addLikedBrand: (state, action) => {
       const brand = { ...action.payload, isLiked: true };
       state.brands.unshift(brand);
+      state.pagination.total = state.pagination.total + 1;
       state.pagination.total = state.pagination.total + 1;
     },
 

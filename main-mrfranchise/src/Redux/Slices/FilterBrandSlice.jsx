@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { userId } from '../../Utils/autherId';
 
-const API_BASE_URL = 'http://localhost:5000/api/v1/';
+const API_BASE_URL = 'https://mrfranchisebackend.mrfranchise.in/api/v1/';
 
 const id = userId
 
@@ -20,6 +20,7 @@ export const fetchFilteredBrands = createAsyncThunk(
         country,
         state,
         district,
+        // areaRequired,
         city,
         investmentRange,
         modelType,
@@ -107,6 +108,7 @@ const initialState = {
     state: null,
     district: null,
     city: null,
+      areaRequired: null,
     investmentRange: null,
     modelType: null,
     areaRequired: null,

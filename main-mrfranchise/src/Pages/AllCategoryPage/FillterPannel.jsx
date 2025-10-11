@@ -79,6 +79,7 @@ const FilterPanel = React.memo(
       areaRequired: true,
       location: true,
       investment: true,
+      areaRequired: true,
     });
 
     // Fetch initial filter data
@@ -179,6 +180,13 @@ const FilterPanel = React.memo(
         .slice(0, 50);
     }, [investmentRanges, searchTerms.investmentRange]);
 
+    const filteredAreaRequired = useMemo(() => {
+      const term = searchTerms.areaRequired.toLowerCase();
+      return areaRequired
+        .filter((area) => area?.toLowerCase().includes(term))
+        .slice(0, 50);
+    }, [areaRequired, searchTerms.areaRequired]);
+
     const filteredStates = useMemo(() => {
       const term = searchTerms.state.toLowerCase();
       return states
@@ -196,25 +204,25 @@ const FilterPanel = React.memo(
         .slice(0, 100);
     }, [filters.state, districts, searchTerms.district]);
 
-const filteredAreaRequired = useMemo(() => {
-  const term = searchTerms.areaRequired.toLowerCase();
-  return areaRequired
-    ?.filter((area) => area?.toLowerCase().includes(term))
-    .sort((a, b) => {
-      // Helper to extract numeric value
-      const extractNumber = (text) => {
-        if (!text) return 0;
-        const match = text.match(/\d[\d,]*/g);
-        if (!match) return 0;
-        const numbers = match.map((n) => parseFloat(n.replace(/,/g, "")));
-        return numbers.length === 2
-          ? (numbers[0] + numbers[1]) / 2
-          : numbers[0];
-      };
-      return extractNumber(a) - extractNumber(b);
-    })
-    .slice(0, 100);
-}, [areaRequired, searchTerms.areaRequired]);
+// const filteredAreaRequired = useMemo(() => {
+//   const term = searchTerms.areaRequired.toLowerCase();
+//   return areaRequired
+//     ?.filter((area) => area?.toLowerCase().includes(term))
+//     .sort((a, b) => {
+//       // Helper to extract numeric value
+//       const extractNumber = (text) => {
+//         if (!text) return 0;
+//         const match = text.match(/\d[\d,]*/g);
+//         if (!match) return 0;
+//         const numbers = match.map((n) => parseFloat(n.replace(/,/g, "")));
+//         return numbers.length === 2
+//           ? (numbers[0] + numbers[1]) / 2
+//           : numbers[0];
+//       };
+//       return extractNumber(a) - extractNumber(b);
+//     })
+//     .slice(0, 100);
+// }, [areaRequired, searchTerms.areaRequired]);
 
 
 
@@ -244,12 +252,13 @@ const filteredAreaRequired = useMemo(() => {
           <Typography variant="h6">Filters</Typography>
           <Button
             size="small"
+            variant="outlined"
             onClick={onClearFilters}
             disabled={activeFilterCount === 0}
             startIcon={<ClearIcon />}
             sx={{ color: "#ff9800" }}
           >
-            Clear
+            Clear 
           </Button>
         </Box>
 

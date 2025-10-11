@@ -73,10 +73,12 @@ function BrandDetailsPage() {
     (async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/v1/brandlisting/getBrandListingByUUID/${brandId}`,
+          `https://mrfranchisebackend.mrfranchise.in/api/v1/brandlisting/getBrandListingByUUID/${brandId}`,
           { params: { userId } }
         );
         let brand = res.data?.data;
+        console.log("Brand data fetched:", brand);
+        
         // Guarantee always array for BrandDetails
         setBrandData(Array.isArray(brand) ? brand : [brand]);
         sessionStorage.setItem(brandCacheKey, JSON.stringify(Array.isArray(brand) ? brand : [brand]));

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/v1/';
+const API_BASE_URL = 'https://mrfranchisebackend.mrfranchise.in/api/v1/';
 
 // Async thunk for fetching all filter options
 export const fetchFilterOptions = createAsyncThunk(
@@ -13,6 +13,8 @@ export const fetchFilterOptions = createAsyncThunk(
 
       if (sub) queryParams.append('sub', sub);
       if (state) queryParams.append('state', state);
+            if (areaRequired) queryParams.append('areaRequired', areaRequired);
+
       if (district) queryParams.append('district', district);
       if (main) queryParams.append('main', main);
             if (areaRequired) queryParams.append('areaRequired', areaRequired);
@@ -34,6 +36,7 @@ const initialState = {
   investmentRanges: [],
   areaRequired: [],
   franchiseModels: [],
+  areaRequired: [],
   states: [],
   districts: [],
   cities: [],
@@ -84,6 +87,9 @@ const filterDropdownSlice = createSlice({
         }
         if (params.state) {
           state.loadingDistricts = true;
+        }
+        if (params.areaRequired) {
+          state.loadingAreaRequired = true;
         }
         if (params.district) {
           state.loadingCities = true;

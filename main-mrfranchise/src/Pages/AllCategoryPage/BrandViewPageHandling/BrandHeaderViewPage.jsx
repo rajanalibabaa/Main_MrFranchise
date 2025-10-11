@@ -305,7 +305,7 @@ const BrandHeader = ({
                       <TableCell sx={{ width: "18%", textAlign: "center" }}>
                         <strong>Area</strong>
                       </TableCell>
-                      <TableCell sx={{ width: "15%", textAlign: "center" }}>
+                      <TableCell sx={{ width: "25%", textAlign: "center" }}>
                         <strong>Investment</strong>
                       </TableCell>
                       <TableCell sx={{ width: "15%", textAlign: "center" }}>
