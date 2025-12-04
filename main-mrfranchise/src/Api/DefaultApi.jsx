@@ -18,7 +18,7 @@ export const postApi = async (url, bodydata) => {
     throw error;
   }
 };
-export const getApi = async (url,query) => {
+export const getApi = async (url,) => {
 
     // console.log("postApi :",url)
   try {
