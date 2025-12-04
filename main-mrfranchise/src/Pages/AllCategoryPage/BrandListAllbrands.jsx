@@ -99,6 +99,8 @@ function BrandList() {
     pagination,
   } = filterBrandsState;
 
+  console.log("brands",brands)
+
   const {
     mainCategories = [],
     subCategories = [],
