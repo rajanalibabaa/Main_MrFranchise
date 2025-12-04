@@ -1,4 +1,4 @@
-export const API_BASE_URL =  "http://mrfranchisebackend.mrfranchise.in/api/v1";
+export const API_BASE_URL =  "https://mrfranchisebackend.mrfranchise.in/api/v1";
 
 // API Endpoints
 export const api = {
