@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Box,
@@ -28,7 +26,7 @@ const FilterDropdowns = ({ onFilterChange }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [filters, setFilters] = useState({
-    selectedSubCategory: "",
+    selectedMainCategory: "",
     selectedState: "",
     selectedInvestmentRange: "",
   });
@@ -60,7 +58,7 @@ const FilterDropdowns = ({ onFilterChange }) => {
         const newFilters = { ...prev, [name]: value };
 
         // Reset dependent filters when parent changes
-        if (name === "selectedSubCategory") {
+        if (name === "selectedMainCategory") {
           newFilters.selectedState = "";
           newFilters.selectedDistrict = "";
           newFilters.selectedCity = "";
@@ -73,16 +71,17 @@ const FilterDropdowns = ({ onFilterChange }) => {
       });
 
       // Fetch dependent data if needed
-      if (name === "selectedSubCategory" && value) {
-        dispatch(fetchFilterOptions({ sub: value }));
+      if (name === "selectedMainCategory" && value) {
+        // 🔸 Changed parameter from sub to main
+        dispatch(fetchFilterOptions({ main: value }));
       } else if (name === "selectedState" && value) {
         dispatch(fetchFilterOptions({ state: value }));
       }
 
       // Call the parent component's filter change handler if provided
       if (onFilterChange) {
-        if (name === "selectedSubCategory") {
-          onFilterChange("subcat", value);
+        if (name === "selectedMainCategory") {
+          onFilterChange("maincat", value); // This is correct
         } else if (name === "selectedState") {
           onFilterChange("state", value);
         } else if (name === "selectedInvestmentRange") {
@@ -95,62 +94,63 @@ const FilterDropdowns = ({ onFilterChange }) => {
 
   
   // Format investment ranges for display
-const formattedInvestmentRanges = useMemo(() => {
-  if (!investmentRanges || investmentRanges.length === 0) {
-    return [{ label: "All Ranges", value: "" }];
-  }
+  const formattedInvestmentRanges = useMemo(() => {
+    if (!investmentRanges || investmentRanges.length === 0) {
+      return [{ label: "All Ranges", value: "" }];
+    }
 
-  // Helper function to convert range to numerical value (in rupees)
-  const getRangeValue = (range) => {
-    // Handle special cases first
-    if (range.includes("Below")) return 0;
-    if (range === "Rs. 50,000 - 2 L") return 50000;
-    
-    // Extract the minimum value from the range
-    const match = range.match(/Rs\.?\s*([\d,\.]+)\s*(L|Cr|Crs)?/i);
-    if (!match) return Number.MAX_SAFE_INTEGER;
-    
-    const num = parseFloat(match[1].replace(/,/g, ''));
-    const unit = match[2] ? match[2].toLowerCase() : '';
-    
-    // Convert to rupees
-    if (unit === 'cr') return num * 10000000;
-    if (unit === 'l') return num * 100000;
-    return num;
-  };
+    // Helper function to convert range to numerical value (in rupees)
+    const getRangeValue = (range) => {
+      // Handle special cases first
+      if (range.includes("Below")) return 0;
+      if (range === "Rs. 50,000 - 2 L") return 50000;
+      
+      // Extract the minimum value from the range
+      const match = range.match(/Rs\.?\s*([\d,\.]+)\s*(L|Cr|Crs)?/i);
+      if (!match) return Number.MAX_SAFE_INTEGER;
+      
+      const num = parseFloat(match[1].replace(/,/g, ''));
+      const unit = match[2] ? match[2].toLowerCase() : '';
+      
+      // Convert to rupees
+      if (unit === 'cr') return num * 10000000;
+      if (unit === 'l') return num * 100000;
+      return num;
+    };
 
-  // Sort ranges based on their numerical value
-  const sortedRanges = [...investmentRanges].sort((a, b) => {
-    return getRangeValue(a) - getRangeValue(b);
-  });
+    // Sort ranges based on their numerical value
+    const sortedRanges = [...investmentRanges].sort((a, b) => {
+      return getRangeValue(a) - getRangeValue(b);
+    });
 
-  return [
-    { label: "All Ranges", value: "" },
-    ...sortedRanges.map((range) => ({ label: range, value: range })),
-  ];
-}, [investmentRanges]);
+    return [
+      { label: "All Ranges", value: "" },
+      ...sortedRanges.map((range) => ({ label: range, value: range })),
+    ];
+  }, [investmentRanges]);
 
   // Handle search button click
-// In your FilterDropdowns component
-const handleFindBrands = useCallback(() => {
-  const queryParams = new URLSearchParams();
-  
-  if (filters.selectedSubCategory) {
-    queryParams.append("subcat", filters.selectedSubCategory);
-  }
-  if (filters.selectedInvestmentRange) {
-    queryParams.append("investmentRange", filters.selectedInvestmentRange);
-  }
-  if (filters.selectedState) {
-    queryParams.append("state", filters.selectedState);
-  }
+  const handleFindBrands = useCallback(() => {
+    const queryParams = new URLSearchParams();
+    
+    if (filters.selectedMainCategory) {
+      // 🔸 Changed from subcat to main to match your API expectations
+      queryParams.append("maincat", filters.selectedMainCategory);
+    }
+    if (filters.selectedInvestmentRange) {
+      queryParams.append("investmentRange", filters.selectedInvestmentRange);
+    }
+    if (filters.selectedState) {
+      queryParams.append("state", filters.selectedState);
+    }
 
- // 🔹 Open in a new browser tab instead of same tab
-  window.open(`/brands?${queryParams.toString()}`, "_blank", "noopener,noreferrer");
-}, [filters, navigate]);
+    // Open in a new browser tab instead of same tab
+    window.open(`/brands?${queryParams.toString()}`, "_blank", "noopener,noreferrer");
+  }, [filters]);
 
 
-  if (loading && !subCategories.length && !states.length) {
+  // 🔸 Changed to check mainCategories instead of subCategories
+  if (loading && !mainCategories.length && !states.length) {
     return (
       <Box display="flex" justifyContent="center" p={4}>
         <CircularProgress />
@@ -180,29 +180,35 @@ const handleFindBrands = useCallback(() => {
         boxShadow: 1,
       }}
     >
-      {/* Category Filter */}
-      <FormControl fullWidth sx={{ minWidth: 180 }}>
-        <InputLabel>Industry</InputLabel>
-        <Select
-          value={filters.selectedSubCategory}
-          onChange={(e) =>
-            handleFilterChange("selectedSubCategory", e.target.value)
-          }
-          label="Industry"
-          MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-          sx={{
-            backgroundColor: "white",
-            borderRadius: 1,
-          }}
-        >
-          <MenuItem value="">Industry</MenuItem>
-          {mainCategories.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    {/* Industry Filter */}
+<FormControl fullWidth sx={{ minWidth: 180 }}>
+  <InputLabel>Industry</InputLabel>
+  <Select
+    value={filters.selectedMainCategory}
+    onChange={(e) =>
+      handleFilterChange("selectedMainCategory", e.target.value)
+    }
+    label="Industry"
+    MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
+    sx={{
+      backgroundColor: "white",
+      borderRadius: 1,
+    }}
+  >
+    <MenuItem value="">All Industries</MenuItem>
+
+    {[...mainCategories]
+      .sort((a, b) =>
+        (a || "").localeCompare(b || "", undefined, { sensitivity: "base" })
+      )
+      .map((category) => (
+        <MenuItem key={category} value={category}>
+          {category}
+        </MenuItem>
+      ))}
+  </Select>
+</FormControl>
+
 
       {/* Investment Range Filter */}
       <FormControl fullWidth sx={{ minWidth: 180 }}>

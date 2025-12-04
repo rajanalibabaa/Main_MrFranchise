@@ -16,14 +16,15 @@ export const fetchFilteredBrands = createAsyncThunk(
         maincat,
         subcat,
         childcat,
-        serchterm,
+        searchTerm,
         country,
         state,
         district,
-        areaRequired,
+        // areaRequired,
         city,
         investmentRange,
         modelType,
+        areaRequired
       } = filters;
 
       const params = new URLSearchParams();
@@ -33,14 +34,14 @@ export const fetchFilteredBrands = createAsyncThunk(
       if (maincat) params.append('maincat', maincat);
       if (subcat) params.append('subcat', subcat);
       if (childcat) params.append('childcat', childcat);
-      if (serchterm) params.append('serchterm', serchterm);
+      if (searchTerm) params.append('searchTerm', searchTerm);
       if (country) params.append('country', country);                                                                         
       if (state) params.append('state', state);
       if (district) params.append('district', district);
       if (city) params.append('city', city);
       if (investmentRange) params.append('investmentRange', investmentRange);
       if (modelType) params.append('modelType', modelType);
-    if (areaRequired) params.append("areaRequired", areaRequired); // ✅ Fixed areaRequired param
+            if (areaRequired) params.append("areaRequired", areaRequired); // ✅ Fixed areaRequired param
 
       const response = await axios.get(`${API_BASE_URL}filter/getAllBrandsAndFilter?${params.toString()}`);
 
@@ -102,7 +103,7 @@ const initialState = {
     maincat: null,
     subcat: null,
     childcat: null,
-    serchterm: '',
+    searchTerm: '',
     country: null,
     state: null,
     district: null,
@@ -110,6 +111,7 @@ const initialState = {
       areaRequired: null,
     investmentRange: null,
     modelType: null,
+    areaRequired: null,
     page: 1,
     limit: 20,
   },

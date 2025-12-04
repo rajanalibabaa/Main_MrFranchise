@@ -8,7 +8,7 @@ export const fetchFilterOptions = createAsyncThunk(
   'filterDropdown/fetchFilterOptions',
   async (params = {}, { rejectWithValue }) => {
     try {
-      const { sub, state, district, main, areaRequired } = params;
+      const { sub, state, district, main, areaRequired   } = params;
       const queryParams = new URLSearchParams();
 
       if (sub) queryParams.append('sub', sub);
@@ -17,6 +17,8 @@ export const fetchFilterOptions = createAsyncThunk(
 
       if (district) queryParams.append('district', district);
       if (main) queryParams.append('main', main);
+            if (areaRequired) queryParams.append('areaRequired', areaRequired);
+
 
       const response = await axios.post(`${API_BASE_URL}filter/getAllBrandFiltersdata?${queryParams.toString()}`);
       return response.data.data;
@@ -32,8 +34,8 @@ const initialState = {
   subCategories: [],
   childCategories: [],
   investmentRanges: [],
-  franchiseModels: [],
   areaRequired: [],
+  franchiseModels: [],
   states: [],
   districts: [],
   cities: [],
@@ -91,6 +93,9 @@ const filterDropdownSlice = createSlice({
         if (params.district) {
           state.loadingCities = true;
         }
+        if (params.areaRequired) {
+          state.loadingAreaRequired = true;
+        }
         if (!action.meta.arg) {
           state.loading = true;
         }
@@ -110,12 +115,13 @@ const filterDropdownSlice = createSlice({
           // Cities response
           state.cities = action.payload;
           state.loadingCities = false;
-        }
-        else if (params.areaRequired) {
-          // Area Required response
-          state.areaRequired = action.payload;
-          state.loadingAreaRequired = false;
-        }
+        }else if (params.areaRequired) {
+          // ✅ Area required filter results — keep separately
+          state.areaRequired =
+            action.payload.areaRequired || action.payload || [];
+          state.loading = false;
+        } 
+        
         else if (params.main) {
           // Subcategories and other filtered options for selected main category
           state.subCategories = action.payload.subcat || [];
@@ -152,9 +158,11 @@ const filterDropdownSlice = createSlice({
           state.citiesError = action.payload;
           state.loadingCities = false;
         } else if (params.areaRequired) {
-          state.areaRequiredError = action.payload;
-          state.loadingAreaRequired = false;
-        } else if (params.main) {
+          state.error = action.payload;
+          state.loading = false;
+        }
+        
+        else if (params.main) {
           state.error = action.payload;
           state.loading = false;
         } else {

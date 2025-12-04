@@ -470,12 +470,12 @@ const NavbarSearch = ({ open, handleClose }) => {
   });
 
   return (
-    <Dialog  open={open} onClose={handleClose} fullWidth maxWidth="md">
+    <Dialog  open={open} onClose={handleClose} fullWidth maxWidth="md" >
       <DialogContent sx={{  p: 3 ,background:'#d5e7ddac',}}>
         {/* Close Button */}
         <IconButton
           onClick={handleClose}
-          sx={{ position: 'absolute', top: 8, right: 8 }}
+          sx={{ position: 'absolute', top: { xs: -5, md: 8 }, right: { xs: -5, md: 8 } }}
         >
           <CloseIcon color="error" />
         </IconButton>
@@ -666,7 +666,9 @@ const NavbarSearch = ({ open, handleClose }) => {
             {/* Main Category Filter */}
             <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
               <Autocomplete
-                options={filteredMainCategories}
+                options={[...filteredMainCategories].sort((a, b) =>
+                  (a || "").localeCompare(b || "", undefined, { sensitivity: "base" })
+                )}
                 value={selectedMainCategory}
                 onChange={(_, newValue) => {
                   setSelectedMainCategory(newValue);
@@ -688,7 +690,7 @@ const NavbarSearch = ({ open, handleClose }) => {
                       endAdornment: (
                         <>
                           {dropdownLoading && selectedMainCategory && (
-                            <CircularProgress color="inherit" size={20} />
+                            <CircularProgress color="black" size={20} />
                           )}
                           {params.InputProps.endAdornment}
                         </>
@@ -704,7 +706,9 @@ const NavbarSearch = ({ open, handleClose }) => {
             {/* Sub Category Filter - dependent on selected main category */}
             <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
               <Autocomplete
-                options={filteredSubCategories}
+                options={[...filteredSubCategories].sort((a, b) =>
+                  (a || "").localeCompare(b || "", undefined, { sensitivity: "base" })
+                )}
                 value={selectedSubCategory}
                 onChange={(_, newValue) => {
                   setSelectedSubCategory(newValue);
@@ -783,7 +787,9 @@ const NavbarSearch = ({ open, handleClose }) => {
             {/* State Filter */}
             <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
               <Autocomplete
-                options={filteredStates}
+                options={[...filteredStates].sort((a, b) =>
+                  (a || "").localeCompare(b || "", undefined, { sensitivity: "base" })
+                )}
                 value={selectedState}
                 onChange={(_, newValue) => {
                   setSelectedState(newValue);
@@ -821,7 +827,9 @@ const NavbarSearch = ({ open, handleClose }) => {
             {/* District Filter - dependent on selected state */}
             <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
               <Autocomplete
-                options={filteredDistricts}
+                options={[...filteredDistricts].sort((a, b) =>
+                  (a || "").localeCompare(b || "", undefined, { sensitivity: "base" })
+                )}
                 value={selectedDistrict}
                 onChange={(_, newValue) => {
                   setSelectedDistrict(newValue);
@@ -899,7 +907,9 @@ const NavbarSearch = ({ open, handleClose }) => {
           <Box display="flex" flexWrap="wrap" gap={2} justifyContent="center" mb={3}>
             <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
               <Autocomplete
-                options={filteredInvestmentRanges}
+                options={[...filteredInvestmentRanges].sort((a, b) =>
+                  (a || "").localeCompare(b || "", undefined, { sensitivity: "base" })
+                )}
                 value={selectedInvestmentRange}
                 onChange={(_, newValue) => {
                   setSelectedInvestmentRange(newValue);

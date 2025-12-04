@@ -76,6 +76,7 @@ const FilterPanel = React.memo(
       mainCategory: true,
       subCategory: true,
       modelType: true,
+      areaRequired: true,
       location: true,
       investment: true,
       areaRequired: true,
@@ -127,13 +128,12 @@ const FilterPanel = React.memo(
       const subcat = params.get("subcat");
       const state = params.get("state");
       const investmentRange = params.get("investmentRange");
-      const areaRequiredParam = params.get("areaRequired");
 
       if (maincat) onFilterChange("maincat", maincat);
       if (subcat) onFilterChange("subcat", subcat);
       if (state) onFilterChange("state", state);
       if (investmentRange) onFilterChange("investmentRange", investmentRange);
-      if (areaRequiredParam) onFilterChange("areaRequired", areaRequiredParam);
+      if (areaRequired) onFilterChange("areaRequired", areaRequired);
     }, [onFilterChange]);
 
     const toggleSection = (section) => {
@@ -204,6 +204,28 @@ const FilterPanel = React.memo(
         .slice(0, 100);
     }, [filters.state, districts, searchTerms.district]);
 
+// const filteredAreaRequired = useMemo(() => {
+//   const term = searchTerms.areaRequired.toLowerCase();
+//   return areaRequired
+//     ?.filter((area) => area?.toLowerCase().includes(term))
+//     .sort((a, b) => {
+//       // Helper to extract numeric value
+//       const extractNumber = (text) => {
+//         if (!text) return 0;
+//         const match = text.match(/\d[\d,]*/g);
+//         if (!match) return 0;
+//         const numbers = match.map((n) => parseFloat(n.replace(/,/g, "")));
+//         return numbers.length === 2
+//           ? (numbers[0] + numbers[1]) / 2
+//           : numbers[0];
+//       };
+//       return extractNumber(a) - extractNumber(b);
+//     })
+//     .slice(0, 100);
+// }, [areaRequired, searchTerms.areaRequired]);
+
+
+
     const filteredCities = useMemo(() => {
       if (!filters.district) return [];
       const term = searchTerms.city.toLowerCase();
@@ -230,12 +252,13 @@ const FilterPanel = React.memo(
           <Typography variant="h6">Filters</Typography>
           <Button
             size="small"
+            variant="outlined"
             onClick={onClearFilters}
             disabled={activeFilterCount === 0}
             startIcon={<ClearIcon />}
             sx={{ color: "#ff9800" }}
           >
-            Clear
+            Clear 
           </Button>
         </Box>
 
@@ -246,7 +269,7 @@ const FilterPanel = React.memo(
         >
           <Link
             underline="hover"
-            color="inherit"
+            color="black"
             onClick={() => scrollToSection(mainCategoryRef)}
             sx={{ cursor: "pointer" }}
           >
@@ -255,7 +278,7 @@ const FilterPanel = React.memo(
   
           <Link
             underline="hover"
-            color="inherit"
+            color="black"
             onClick={() => scrollToSection(modelTypeRef)}
             sx={{ cursor: "pointer" }}
           >
@@ -263,7 +286,7 @@ const FilterPanel = React.memo(
           </Link>
           <Link
             underline="hover"
-            color="inherit"
+            color="black"
             onClick={() => scrollToSection(locationRef)}
             sx={{ cursor: "pointer" }}
           >
@@ -271,15 +294,15 @@ const FilterPanel = React.memo(
           </Link>
           <Link
             underline="hover"
-            color="inherit"
+            color="black"
             onClick={() => scrollToSection(investmentRef)}
             sx={{ cursor: "pointer" }}
           >
             Investment Range
           </Link>
-          <Link
+           <Link
             underline="hover"
-            color="inherit"
+            color="black"
             onClick={() => scrollToSection(areaRequiredRef)}
             sx={{ cursor: "pointer" }}
           >
@@ -537,6 +560,177 @@ const FilterPanel = React.memo(
             </Box>
           </AccordionDetails>
         </Accordion>
+
+ {/* Investment Range Filter */}
+        <Accordion
+          ref={investmentRef}
+          expanded={expandedSections.investment}
+          onChange={() => toggleSection("investment")}
+          disableGutters
+          elevation={0}
+          sx={{ mb: 2, "&:before": { display: "none" } }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon sx={{ color: "#4caf50" }} />}
+            sx={{
+              px: 1,
+              "&.Mui-expanded": { minHeight: "48px" },
+            }}
+          >
+            <Typography
+              sx={{
+                color: "#4caf50",
+                fontWeight: "bold",
+                fontSize: "0.875rem",
+              }}
+            >
+              Investment Range
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 0 }}>
+            <Box sx={{ px: 1 }}>
+              {/* <TextField
+                fullWidth
+                size="small"
+                placeholder="Search investment ranges..."
+                value={searchTerms.investmentRange}
+                onChange={handleSearchTermChange("investmentRange")}
+                sx={{ mb: 1 }}
+                InputProps={{
+                  startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
+                }}
+              /> */}
+              <RadioGroup
+                value={filters.investmentRange || ""}
+                onChange={(e) =>
+                  onFilterChange("investmentRange", e.target.value)
+                }
+              >
+                {filteredInvestmentRanges.map((range) => (
+                  <FormControlLabel
+                    key={`range-${range}`}
+                    value={range}
+                    control={
+                      <Radio
+                        size="small"
+                        sx={{
+                          color: "#ff9800",
+                          "&.Mui-checked": { color: "#4caf50" },
+                          padding: "6px",
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography fontSize="0.8125rem">{range}</Typography>
+                    }
+                    sx={{ mb: 0, mr: 0 }}
+                  />
+                ))}
+              </RadioGroup>
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+
+
+        {/* Area Required Filter */}
+<Accordion
+  ref={areaRequiredRef}
+  expanded={expandedSections.areaRequired}
+  onChange={() => toggleSection("areaRequired")}
+  disableGutters
+  elevation={0}
+  sx={{ mb: 2, "&:before": { display: "none" } }}
+>
+  <AccordionSummary
+    expandIcon={<ExpandMoreIcon sx={{ color: "#4caf50" }} />}
+    sx={{
+      px: 1,
+      "&.Mui-expanded": { minHeight: "48px" },
+    }}
+  >
+    <Typography
+      sx={{
+        color: "#4caf50",
+        fontWeight: "bold",
+        fontSize: "0.875rem",
+      }}
+    >
+      Area Required
+    </Typography>
+  </AccordionSummary>
+
+  <AccordionDetails sx={{ p: 0 }}>
+    <Box sx={{ px: 1 }}>
+      <TextField
+        fullWidth
+        size="small"
+        placeholder="Search area required..."
+        value={searchTerms.areaRequired}
+        onChange={handleSearchTermChange("areaRequired")}
+        sx={{ mb: 1 }}
+        InputProps={{
+          startAdornment: (
+            <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />
+          ),
+        }}
+      />
+
+      <RadioGroup
+        value={filters.areaRequired || ""}
+        onChange={(e) => onFilterChange("areaRequired", e.target.value)}
+      >
+        <FormControlLabel
+          value=""
+          control={
+            <Radio
+              size="small"
+              sx={{
+                color: "#ff9800",
+                "&.Mui-checked": { color: "#4caf50" },
+                padding: "6px",
+              }}
+            />
+          }
+          label={<Typography fontSize="0.8125rem">All Areas</Typography>}
+          sx={{ mb: 0, mr: 0 }}
+        />
+
+        {filteredAreaRequired.map((area) => (
+          <FormControlLabel
+            key={`area-${area}`}
+            value={area}
+            control={
+              <Radio
+                size="small"
+                sx={{
+                  color: "#ff9800",
+                  "&.Mui-checked": { color: "#4caf50" },
+                  padding: "6px",
+                }}
+              />
+            }
+            label={<Typography fontSize="0.8125rem">{area}</Typography>}
+            sx={{ mb: 0, mr: 0 }}
+          />
+        ))}
+      </RadioGroup>
+
+      {filteredAreaRequired.length === 0 && (
+        <Typography
+          fontSize="0.75rem"
+          color="text.secondary"
+          textAlign="center"
+          sx={{ py: 1 }}
+        >
+          No results found
+        </Typography>
+      )}
+    </Box>
+  </AccordionDetails>
+</Accordion>
+
+
+
         {/* Location Filters */}
         <Accordion
           ref={locationRef}
@@ -754,163 +948,7 @@ const FilterPanel = React.memo(
           </AccordionDetails>
         </Accordion>
 
-        {/* Investment Range Filter */}
-        <Accordion
-          ref={investmentRef}
-          expanded={expandedSections.investment}
-          onChange={() => toggleSection("investment")}
-          disableGutters
-          elevation={0}
-          sx={{ mb: 2, "&:before": { display: "none" } }}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon sx={{ color: "#4caf50" }} />}
-            sx={{
-              px: 1,
-              "&.Mui-expanded": { minHeight: "48px" },
-            }}
-          >
-            <Typography
-              sx={{
-                color: "#4caf50",
-                fontWeight: "bold",
-                fontSize: "0.875rem",
-              }}
-            >
-              Investment Range
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ p: 0 }}>
-            <Box sx={{ px: 1 }}>
-              {/* <TextField
-                fullWidth
-                size="small"
-                placeholder="Search investment ranges..."
-                value={searchTerms.investmentRange}
-                onChange={handleSearchTermChange("investmentRange")}
-                sx={{ mb: 1 }}
-                InputProps={{
-                  startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />,
-                }}
-              /> */}
-              <RadioGroup
-                value={filters.investmentRange || ""}
-                onChange={(e) =>
-                  onFilterChange("investmentRange", e.target.value)
-                }
-              >
-                {filteredInvestmentRanges.map((range) => (
-                  <FormControlLabel
-                    key={`range-${range}`}
-                    value={range}
-                    control={
-                      <Radio
-                        size="small"
-                        sx={{
-                          color: "#ff9800",
-                          "&.Mui-checked": { color: "#4caf50" },
-                          padding: "6px",
-                        }}
-                      />
-                    }
-                    label={
-                      <Typography fontSize="0.8125rem">{range}</Typography>
-                    }
-                    sx={{ mb: 0, mr: 0 }}
-                  />
-                ))}
-              </RadioGroup>
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-
-        {/* Area Required Filter */}
-<Accordion
-  ref={areaRequiredRef}
-  expanded={expandedSections.areaRequired}
-  onChange={() => toggleSection("areaRequired")}
-  disableGutters
-  elevation={0}
-  sx={{ mb: 2, "&:before": { display: "none" } }}
->
-  <AccordionSummary
-    expandIcon={<ExpandMoreIcon sx={{ color: "#4caf50" }} />}
-    sx={{
-      px: 1,
-      "&.Mui-expanded": { minHeight: "48px" },
-    }}
-  >
-    <Typography
-      sx={{ color: "#4caf50", fontWeight: "bold", fontSize: "0.875rem" }}
-    >
-      Area Required
-    </Typography>
-  </AccordionSummary>
-
-  <AccordionDetails sx={{ p: 0 }}>
-    <Box sx={{ px: 1 }}>
-      <RadioGroup
-        value={filters.areaRequired || ""}
-        onChange={(e) => onFilterChange("areaRequired", e.target.value)}
-      >
-        <FormControlLabel
-          value=""
-          control={
-            <Radio
-              size="small"
-              sx={{
-                color: "#ff9800",
-                "&.Mui-checked": { color: "#4caf50" },
-                padding: "6px",
-              }}
-            />
-          }
-          label={<Typography fontSize="0.8125rem">All Areas</Typography>}
-          sx={{ mb: 0, mr: 0 }}
-        />
-
-        {[...filteredAreaRequired]
-          .slice()
-          .sort((a, b) => {
-            /**
-             * Helper to extract numeric area (in sq ft)
-             * Handles formats like "500 - 1000 sq ft", "800 SQ.FT", "1,000 Sq.Ft.", etc.
-             */
-            const extractNumber = (text) => {
-              if (!text) return 0;
-              const match = text.match(/\d[\d,]*/g);
-              if (!match) return 0;
-              const numbers = match.map((n) => parseFloat(n.replace(/,/g, "")));
-              return numbers.length === 2
-                ? (numbers[0] + numbers[1]) / 2 // take average of range
-                : numbers[0];
-            };
-
-            return extractNumber(a) - extractNumber(b);
-          })
-          .map((area) => (
-            <FormControlLabel
-              key={`area-${area}`}
-              value={area}
-              control={
-                <Radio
-                  size="small"
-                  sx={{
-                    color: "#ff9800",
-                    "&.Mui-checked": { color: "#4caf50" },
-                    padding: "6px",
-                  }}
-                />
-              }
-              label={<Typography fontSize="0.8125rem">{area}</Typography>}
-              sx={{ mb: 0, mr: 0 }}
-            />
-          ))}
-      </RadioGroup>
-    </Box>
-  </AccordionDetails>
-</Accordion>
-
+       
         <Divider sx={{ my: 2 }} />
         <Typography
           variant="body2"

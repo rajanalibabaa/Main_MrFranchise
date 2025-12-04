@@ -13,6 +13,7 @@ import LoadingFallback from '../src/services/SupportingComponents/LoadingFallbac
 import HomeBannerSec from "./Pages/HomePages/HomeBannerSec"
 import BrandDetailsPage from './Pages/AllCategoryPage/BrandDetailsPage'
 import BrandCategroyViewPage from './Pages/AllCategoryPage/BrandCategroyViewPage'
+import { autoLogOut } from './Api/autologout.jsx';
 // Lazy-loaded components with prefetching
 // const  = lazy(() => import(/* webpackPrefetch: true */ ));
 // const  = lazy(() => import(/* webpackPrefetch: true */ ''));
@@ -100,6 +101,7 @@ const App = () => {
         dispatch(logout());
         window.location.href = '/loginpage';
       }
+      autoLogOut(dispatch)
     };
     
     checkAutoLogout();
