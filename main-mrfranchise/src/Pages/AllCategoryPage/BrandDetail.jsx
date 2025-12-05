@@ -78,6 +78,7 @@ function LazyOverviewTab({ brand }) {
   );
 }
 
+
 const ExpansionLocationSection = ({
   brand,
   isMobile,

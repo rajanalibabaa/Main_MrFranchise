@@ -99,8 +99,6 @@ function BrandList() {
     pagination,
   } = filterBrandsState;
 
-  console.log("brands",brands)
-
   const {
     mainCategories = [],
     subCategories = [],
@@ -381,7 +379,7 @@ const toggleBrandComparison = useCallback((brand) => {
                 gutterBottom
                 color="#ff9800"
               >
-             All Category Brands
+                Food & Beverage Brands
               </Typography>
               <Typography sx={{ ml: 2, mb: 2 }} variant="body2" gutterBottom>
                 Showing {brands.length} of {pagination.total} brands

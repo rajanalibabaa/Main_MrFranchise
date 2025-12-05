@@ -24,7 +24,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getApi } from "../../../Api/DefaultApi";
 import { useParams, useLocation, useSearchParams } from "react-router-dom";
-import { token } from "../../../Utils/autherId";
+import { token, userId } from "../../../Utils/autherId";
 
 
 const flattenBrandData = (brandDoc) => {
@@ -117,7 +117,7 @@ const BrandListingEdit = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
     
-   const uuid = params?.uuid || 
+   const uuid = userId ||params?.uuid || 
                location?.state?.uuid || 
                searchParams.get("uuid") ||
                localStorage.getItem("brandUUID") || 

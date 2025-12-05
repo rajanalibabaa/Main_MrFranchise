@@ -12,12 +12,10 @@ import {
   TableRow,
   Paper,
   CircularProgress,
+  Chip,
+  Button as MuiButton,
 } from "@mui/material";
-import {
-  Phone,
-  Favorite,
-  ShareOutlined,
-} from "@mui/icons-material";
+import { Phone, Favorite, ShareOutlined, Label } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import ShareDialogActions from "../ShareDialogActions";
 import { RiBookmark3Fill } from "react-icons/ri";
@@ -41,18 +39,31 @@ const BrandHeader = ({
   const likeButtonRef = useRef(null);
   const shortlistButtonRef = useRef(null);
 
+  console.log('brand loading ', brand);
+  
   // 🎉 Confetti effect to use element position
   const triggerCelebration = (color, buttonRef) => {
     if (buttonRef && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       const x = (rect.left + rect.width / 2) / window.innerWidth;
       const y = (rect.top + rect.height / 2) / window.innerHeight;
-      
+
       confetti({
         particleCount: 150,
         spread: 100,
         origin: { x, y },
-          colors: [color, "#ffffff", "#fdc81cff", "#76ec1cff", "#ff1dd6ffff", "#00eaffff", "#0400ffff", "#000000", "#f10808ffff", "#f5f50aff"],
+        colors: [
+          color,
+          "#ffffff",
+          "#fdc81cff",
+          "#76ec1cff",
+          "#ff1dd6ffff",
+          "#00eaffff",
+          "#0400ffff",
+          "#000000",
+          "#f10808ffff",
+          "#f5f50aff",
+        ],
       });
     } else {
       // Fallback to center if element not found
@@ -67,9 +78,9 @@ const BrandHeader = ({
 
   const handleMoreClick = (e) => {
     e.preventDefault();
-    const element = document.getElementById('expansion-location');
+    const element = document.getElementById("expansion-location");
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -113,10 +124,10 @@ const BrandHeader = ({
         >
           <Box
             position="relative"
-            sx={{ 
-              border: "2px solid orange", 
-              borderRadius: "10px", 
-              width: "clamp(120px, 20vw, 200px)", 
+            sx={{
+              border: "2px solid orange",
+              borderRadius: "10px",
+              width: "clamp(120px, 20vw, 200px)",
               height: "clamp(120px, 20vw, 200px)",
               display: "flex",
               alignItems: "center",
@@ -131,129 +142,127 @@ const BrandHeader = ({
               sx={{
                 width: "100%",
                 height: "100%",
-                objectFit: "contain"
+                objectFit: "contain",
               }}
             />
           </Box>
 
           <Box width="100%">
             {/* Brand name and actions */}
-            <Box>
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                flexDirection={isMobile ? "column" : "row"}
-                gap={2}
-              >
-                <Box>
-                  <Typography
-                    variant={isMobile ? "h6" : "h5"}
-                    sx={{
-                      fontWeight: 600,
-                      mb: 1,
-                      background: "linear-gradient(45deg, #000 30%, #000 90%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      textAlign: isMobile ? "center" : "left",
-                    }}
-                  >
-                    {brand[0]?.brandDetails?.brandName}
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              flexDirection={isMobile ? "column" : "row"}
+              gap={2}
+            >
+              <Box>
+                <Typography
+                  variant={isMobile ? "h6" : "h5"}
+                  sx={{
+                    fontWeight: 600,
+                    mb: 1,
+                    background: "linear-gradient(45deg, #000 30%, #000 90%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    textAlign: isMobile ? "center" : "left",
+                  }}
+                >
+                  {brand[0]?.brandDetails?.brandName}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  textAlign={isMobile ? "center" : "left"}
+                  fontSize={isMobile ? "0.875rem" : "1rem"}
+                >
+                  {brand[0]?.brandDetails?.tagLine}
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    gap: isMobile ? 1 : 10,
+                    mt: 1,
+                    justifyContent: isMobile ? "center" : "flex-start",
+                  }}
+                >
+                  <Typography fontSize={isMobile ? "0.8rem" : "0.9rem"}>
+                    Established Year:{" "}
+                    <label variant="body1" color="text.secondary">
+                      {brand?.[0]?.brandfranchisedetails?.franchiseDetails
+                        ?.establishedYear || "N/A"}
+                    </label>
                   </Typography>
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    textAlign={isMobile ? "center" : "left"}
-                    fontSize={isMobile ? "0.875rem" : "1rem"}
-                  >
-                    {brand[0]?.brandDetails?.tagLine}
+                  <Typography fontSize={isMobile ? "0.8rem" : "0.9rem"}>
+                    Franchise Since:{" "}
+                    <label variant="body1" color="text.secondary">
+                      {brand?.[0]?.brandfranchisedetails?.franchiseDetails
+                        ?.franchiseSinceYear || "N/A"}
+                    </label>
                   </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      alignItems: "center",
-                      gap: isMobile ? 1 : 10,
-                      mt: 1,
-                      justifyContent: isMobile ? "center" : "flex-start",
-                    }}
-                  >
-                    <Typography fontSize={isMobile ? "0.8rem" : "0.9rem"}>
-                      Established Year:{" "}
-                      <label variant="body1" color="text.secondary">
-                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails?.establishedYear || "N/A"}
-                      </label>
-                    </Typography>
-                    <Typography fontSize={isMobile ? "0.8rem" : "0.9rem"}>
-                      Franchise Since:{" "}
-                      <label variant="body1" color="text.secondary">
-                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails?.franchiseSinceYear || "N/A"}
-                      </label>
-                    </Typography>
-                  </Box>
                 </Box>
-                <Box sx={{ mt: isMobile ? 1 : 0, ml: isMobile ? 0 : 2 }}>
-                  <Button
-                    variant="contained"
-                    size={isMobile ? "small" : "medium"}
-                    startIcon={<Phone />}
-                    onClick={toggleDrawer(true)}
-                    sx={{
-                      px: isMobile ? 0 : 1.5,
-                      py: isMobile ? 1 : 2,
-                      bgcolor: "#ff9800",
-                      "&:hover": { bgcolor: "#e65100" },
-                      fontSize: isMobile ? "0.75rem" : "0.875rem",
-                    }}
-                  >
-                    VIEW CONTACT
-                  </Button>
-                  <IconButton
-                    ref={likeButtonRef}
-                    sx={{ marginLeft: "90px" }}
-                    onClick={handleLikeClickWithConfetti}
-                    disabled={isProcessingLike}
-                  >
-                    {isProcessingLike ? (
-                      <CircularProgress size={isMobile ? 20 : 24} />
-                    ) : (
-                      <Favorite
-                        sx={{
-                          color: localIsLiked
-                            ? "#f44336"
-                            : "rgba(0, 0, 0, 0.23)",
-                        }}
-                      />
-                    )}
-                  </IconButton>
-                  <IconButton
-                    ref={shortlistButtonRef}
-                    onClick={handleToggleShortListWithConfetti}
-                    sx={{
-                      color: shortListed ? "#7ef400ff" : "rgba(0, 0, 0, 0.23)",
-                    }}
-                  >
-                    <RiBookmark3Fill />
-                  </IconButton>
-                  <IconButton
-                    onClick={handleOpenShareClick}
-                    size={isMobile ? "small" : "medium"}
-                  >
-                    <ShareOutlined
-                      sx={{ fontSize: isMobile ? "1.2rem" : "1.5rem" }}
+              </Box>
+              <Box sx={{ mt: isMobile ? 1 : 0, ml: isMobile ? 0 : 2 }}>
+                <Button
+                  variant="contained"
+                  size={isMobile ? "small" : "medium"}
+                  startIcon={<Phone />}
+                  onClick={toggleDrawer(true)}
+                  sx={{
+                    px: isMobile ? 0 : 1.5,
+                    py: isMobile ? 1 : 2,
+                    bgcolor: "#ff9800",
+                    "&:hover": { bgcolor: "#e65100" },
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  }}
+                >
+                  VIEW CONTACT
+                </Button>
+                <IconButton
+                  ref={likeButtonRef}
+                  sx={{ marginLeft: "90px" }}
+                  onClick={handleLikeClickWithConfetti}
+                  disabled={isProcessingLike}
+                >
+                  {isProcessingLike ? (
+                    <CircularProgress size={isMobile ? 20 : 24} />
+                  ) : (
+                    <Favorite
+                      sx={{
+                        color: localIsLiked ? "#f44336" : "rgba(0, 0, 0, 0.23)",
+                      }}
                     />
-                  </IconButton>
-
-                  <ShareDialogActions
-                    anchorEl={anchorEl}
-                    setAnchorEl={setAnchorEl}
-                    brand={{
-                      name: brand[0]?.brandDetails?.brandName,
-                      logo: brand[0]?.uploads?.logo,
-                      // video: brand[0]?.uploads?.franchisePromotionVideo
-                    }}
+                  )}
+                </IconButton>
+                <IconButton
+                  ref={shortlistButtonRef}
+                  onClick={handleToggleShortListWithConfetti}
+                  sx={{
+                    color: shortListed ? "#7ef400ff" : "rgba(0, 0, 0, 0.23)",
+                  }}
+                >
+                  <RiBookmark3Fill />
+                </IconButton>
+                <IconButton
+                  onClick={handleOpenShareClick}
+                  size={isMobile ? "small" : "medium"}
+                >
+                  <ShareOutlined
+                    sx={{ fontSize: isMobile ? "1.2rem" : "1.5rem" }}
                   />
-                </Box>
+                </IconButton>
+
+                <ShareDialogActions
+                  anchorEl={anchorEl}
+                  setAnchorEl={setAnchorEl}
+                  brand={{
+                    name: brand[0]?.brandDetails?.brandName,
+                    logo: brand[0]?.uploads?.logo,
+                    // video: brand[0]?.uploads?.franchisePromotionVideo
+                  }}
+                />
               </Box>
             </Box>
 
@@ -305,14 +314,14 @@ const BrandHeader = ({
                       <TableCell sx={{ width: "18%", textAlign: "center" }}>
                         <strong>Area</strong>
                       </TableCell>
-                      <TableCell sx={{ width: "25%", textAlign: "center" }}>
+                      <TableCell sx={{ width: "20%", textAlign: "center" }}>
                         <strong>Investment</strong>
                       </TableCell>
                       <TableCell sx={{ width: "15%", textAlign: "center" }}>
                         <strong>Total Outlets</strong>
                       </TableCell>
                       <TableCell sx={{ width: "30%", textAlign: "center" }}>
-                        <strong>Expansion Location</strong>
+                        <strong>Origin Location</strong>
                       </TableCell>
                     </TableRow>
                   </TableHead>
@@ -327,7 +336,8 @@ const BrandHeader = ({
                           py: isMobile ? "8px" : "12px",
                         }}
                       >
-                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails?.brandCategories?.child || "N/A"}
+                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails
+                          ?.brandCategories?.sub || "N/A"}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -338,7 +348,8 @@ const BrandHeader = ({
                           py: isMobile ? "8px" : "12px",
                         }}
                       >
-                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails?.fico?.[0]?.areaRequired || "N/A"}
+                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails
+                          ?.fico?.[0]?.areaRequired || "N/A"}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -349,7 +360,8 @@ const BrandHeader = ({
                           py: isMobile ? "8px" : "12px",
                         }}
                       >
-                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails?.fico?.[0]?.investmentRange || "N/A"}
+                        {brand?.[0]?.brandfranchisedetails?.franchiseDetails
+                          ?.fico?.[0]?.investmentRange || "N/A"}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -360,7 +372,10 @@ const BrandHeader = ({
                           py: isMobile ? "8px" : "12px",
                         }}
                       >
-                        {getOutletRange(brand?.[0]?.brandfranchisedetails?.franchiseDetails?.totalOutlets || "N/A")}
+                        {getOutletRange(
+                          brand?.[0]?.brandfranchisedetails?.franchiseDetails
+                            ?.totalOutlets || "N/A"
+                        )}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -371,8 +386,10 @@ const BrandHeader = ({
                           py: isMobile ? "8px" : "12px",
                         }}
                       >
-                        {(() => {
-                          const locations = brand?.[0]?.brandexpansionlocationdatas?.expansionLocations?.domestic?.locations || [];
+                        {/* {(() => {
+                          const locations =
+                            brand?.[0]?.brandexpansionlocationdatas
+                              ?.expansionLocations?.domestic?.locations || [];
 
                           const states = locations
                             .map((loc) => loc.state)
@@ -406,13 +423,97 @@ const BrandHeader = ({
                               )}
                             </>
                           );
-                        })()}
+                        })()} */}
+
+  {brand?.[0]?.brandDetails?.state || "N/A"} , {brand?.[0]?.brandDetails?.city || "N/A"}
+
                       </TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
             </Box>
+           <Typography
+  color="#7AD03A"
+  mt={isMobile ? 2 : 1}
+  fontSize={isMobile ? "0.8rem" : "0.9rem"}
+  variant="body1"
+  sx={{ fontWeight: "bold" }}
+>
+  Brand Category Tags :
+  <Box sx={{ mt: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+    {(() => {
+      const childCategories = brand?.[0]?.brandfranchisedetails?.franchiseDetails?.brandCategories?.child;
+      
+      // Parse categories from different formats
+      let categoryArray = [];
+      if (Array.isArray(childCategories)) {
+        categoryArray = childCategories;
+      } else if (typeof childCategories === 'string' && childCategories !== "N/A") {
+        categoryArray = childCategories.split(/[,|\-|]/).map(item => item.trim()).filter(Boolean);
+      }
+
+      if (categoryArray.length === 0) {
+        return (
+          <Typography variant="caption" color="black">
+            N/A
+          </Typography>
+        );
+      }
+
+      return (
+        <>
+          {/* First row - First 4 categories */}
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            {categoryArray.slice(0, 7).map((category, index) => (
+              <Chip
+                key={index}
+                label={category}
+                size="small"
+                variant="outlined"
+                sx={{
+                  fontSize: isMobile ? "0.65rem" : "0.75rem",
+                  height: "24px",
+                  backgroundColor: "#f8f9fa",
+                  borderColor: "#7AD03A",
+                  color: "black",
+                  "& .MuiChip-label": {
+                    padding: "0 8px",
+                  }
+                }}
+              />
+            ))}
+          </Box>
+          
+          {/* Second row - Remaining categories */}
+          {categoryArray.length > 4 && (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+              {categoryArray.slice(4).map((category, index) => (
+                <Chip
+                  key={index + 4}
+                  label={category}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontSize: isMobile ? "0.65rem" : "0.75rem",
+                    height: "24px",
+                    backgroundColor: "#f8f9fa",
+                    borderColor: "#7AD03A",
+                    color: "black",
+                    "& .MuiChip-label": {
+                      padding: "0 8px",
+                    }
+                  }}
+                />
+              ))}
+            </Box>
+          )}
+        </>
+      );
+    })()}
+  </Box>
+</Typography>
+
           </Box>
         </Box>
       </Box>
