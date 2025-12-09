@@ -379,7 +379,7 @@ const toggleBrandComparison = useCallback((brand) => {
                 gutterBottom
                 color="#ff9800"
               >
-                Food & Beverage Brands
+              All Brands
               </Typography>
               <Typography sx={{ ml: 2, mb: 2 }} variant="body2" gutterBottom>
                 Showing {brands.length} of {pagination.total} brands
