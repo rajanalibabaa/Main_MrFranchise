@@ -14,6 +14,8 @@ import HomeBannerSec from "./Pages/HomePages/HomeBannerSec"
 import BrandDetailsPage from './Pages/AllCategoryPage/BrandDetailsPage'
 import BrandCategroyViewPage from './Pages/AllCategoryPage/BrandCategroyViewPage'
 import { autoLogOut } from './Api/autologout.jsx';
+import BrandActionManagement from './Components/BrandProfile_Component/BrandRequestHandle/BrandActionManagement.jsx';
+import MembershipPackagesEdit from './Components/Footers/QuickLinks/PaymentPakageUpgrade/MembershipPackagesEdit.jsx';
 // Lazy-loaded components with prefetching
 // const  = lazy(() => import(/* webpackPrefetch: true */ ));
 // const  = lazy(() => import(/* webpackPrefetch: true */ ''));
@@ -52,6 +54,9 @@ const BrandDetailsEdit = lazy(() => import('./Components/BrandProfile_Component/
 const FranchiseDetailsEdit = lazy(() => import('./Components/BrandProfile_Component/BrandDashboardController/FranchiseDetailsEdit'));
 const ExpansionLocationEdit = lazy(() => import('./Components/BrandProfile_Component/BrandDashboardController/ExpansionLocationEdit'));
 const UploadsEdit = lazy(() => import('./Components/BrandProfile_Component/BrandDashboardController/UploadsEdit.jsx'));
+
+//payment page
+const PaymentPage = lazy(() => import('./Components/Footers/QuickLinks/PaymentPAge/PaymentPage.jsx'));
 
 // Footer Pages
 const AboutUs = lazy(() => import('./Components/Footers/HelpAndSupport/AboutUs'));
@@ -93,14 +98,23 @@ const App = () => {
 
   // Auto logout functionality
   useEffect(() => {
-    const checkAutoLogout = () => {
+    
+    const checkAutoLogout = async() => {
       const logoutTimestamp = localStorage.getItem('logoutTimestamp');
       if (!logoutTimestamp ) return;
       
       if (Date.now() >= parseInt(logoutTimestamp, 10)) {
         dispatch(logout());
+        //  await postApi(`${api.logout.post.logout}/${id}`)
         window.location.href = '/loginpage';
       }
+      // const autoLogOut = await postApi(`${api.logout.post.autoLogout}/${id}`)
+      
+      // if (autoLogOut.data.statuscode === 409 || autoLogOut.data.statuscode === 401) {
+      //   console.log("autoLogOut",autoLogOut.data)
+      //   dispatch(logout())
+      //   window.location.href = '/';
+      // }
       autoLogOut(dispatch)
     };
     
@@ -136,6 +150,7 @@ const App = () => {
               <Route path="/brands/:brandId" element={<BrandDetailsPage />} />
               <Route path="/brandviewpage" element={<BrandCategroyViewPage />} />
               <Route path="/brands" element={<BrandCategroyViewPage />} />
+              <Route path="/PaymentPage" element={<PaymentPage />} />
               
               {/* Authentication Routes */}
               <Route path="/loginpage" element={<LoginPage />} />
@@ -167,10 +182,12 @@ const App = () => {
                   <Route path="franchisedetailcontrol" element={<FranchiseDetailsEdit />} />
                   <Route path="expansionlocationcontrol" element={<ExpansionLocationEdit />} />
                   <Route path="uploadcontrol" element={<UploadsEdit />} />
+                    <Route path="packageupgrade" element={<MembershipPackagesEdit />} />
                   <Route path="brandfeedback" element={<BrandFeedBack />} />
                   <Route path="brandcomplaint" element={<BrandComplaint />} />
                   <Route path="brandsearchus" element={<BrandSearchus />} />
                   <Route path="brandlistingcontrol" element={<BrandListingEdit />} />
+                  <Route path='actionmanager' element={<BrandActionManagement/>}/>
                 </Route>
               {/* )} */}
 

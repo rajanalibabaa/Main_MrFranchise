@@ -431,7 +431,7 @@ const FilterPanel = React.memo(
                                 />
 
                                 {/* Child categories when this specific subcategory is selected */}
-                                {filters.subcat === subCategory && (
+                                {/* {filters.subcat === subCategory && (
                                   <Box
                                     sx={{
                                       ml: 2,
@@ -481,7 +481,7 @@ const FilterPanel = React.memo(
                                       </RadioGroup>
                                     )}
                                   </Box>
-                                )}
+                                )} */}
                               </Box>
                             ))}
                           </RadioGroup>

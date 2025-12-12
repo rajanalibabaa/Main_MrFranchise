@@ -23,9 +23,29 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getApi } from "../../../Api/DefaultApi";
+import { useParams, useLocation, useSearchParams } from "react-router-dom";
+import { token, userId } from "../../../Utils/autherId";
+
 
 const flattenBrandData = (brandDoc) => {
-  if (!brandDoc) return {};
+  if (!brandDoc) {
+    console.log("❌ flattenBrandData: No brandDoc provided");
+    return {};
+  }
+
+  console.log("🔄 flattenBrandData: Processing brand document");
+
+  const franchiseDetails = brandDoc.franchiseDetails || {};
+  const franchiseTagsFromAPI = franchiseDetails.franchiseTags || {};
+  
+  console.log("🔄 FranchiseTags from API:", franchiseTagsFromAPI);
+  console.log("🔄 FICO from API:", franchiseDetails.fico);
+  console.log("🔄 FICO type:", typeof franchiseDetails.fico);
+  console.log("🔄 FICO is array?", Array.isArray(franchiseDetails.fico));
+
+  // Ensure fico is always an array
+  const ficoData = Array.isArray(franchiseDetails.fico) ? franchiseDetails.fico : [];
+
   return {
     // Brand Details
     fullName: brandDoc.brandDetails?.fullName || "",
@@ -54,24 +74,23 @@ const flattenBrandData = (brandDoc) => {
     pancardNumber: brandDoc.brandDetails?.pancardNumber || "",
 
     // Franchise Details
-    brandCategories: brandDoc.franchiseDetails?.brandCategories || {},
-    aidFinancing: brandDoc.franchiseDetails?.aidFinancing || "",
-    brandDescription: brandDoc.franchiseDetails?.brandDescription || "",
-    companyOwnedOutlets: brandDoc.franchiseDetails?.companyOwnedOutlets || "",
-    consultationOrAssistance:
-      brandDoc.franchiseDetails?.consultationOrAssistance || "",
-    establishedYear: brandDoc.franchiseDetails?.establishedYear || "",
-    franchiseDevelopment: brandDoc.franchiseDetails?.franchiseDevelopment || "",
-    franchiseOutlets: brandDoc.franchiseDetails?.franchiseOutlets || "",
-    franchiseSinceYear: brandDoc.franchiseDetails?.franchiseSinceYear || "",
-    totalOutlets: brandDoc.franchiseDetails?.totalOutlets || "",
-    fico: brandDoc.franchiseDetails?.fico || [],
-    trainingSupport: brandDoc.franchiseDetails?.trainingSupport || [],
-    uniqueSellingPoints: brandDoc.franchiseDetails?.uniqueSellingPoints || [],
+    brandCategories: franchiseDetails.brandCategories || {},
+    aidFinancing: franchiseDetails.aidFinancing || "",
+    brandDescription: franchiseDetails.brandDescription || "",
+    companyOwnedOutlets: franchiseDetails.companyOwnedOutlets || "",
+    consultationOrAssistance: franchiseDetails.consultationOrAssistance || "",
+    establishedYear: franchiseDetails.establishedYear || "",
+    franchiseDevelopment: franchiseDetails.franchiseDevelopment || "",
+    franchiseOutlets: franchiseDetails.franchiseOutlets || "",
+    franchiseSinceYear: franchiseDetails.franchiseSinceYear || "",
+    totalOutlets: franchiseDetails.totalOutlets || "",
+    fico: ficoData, // Always an array
+    trainingSupport: franchiseDetails.trainingSupport || [],
+    uniqueSellingPoints: franchiseDetails.uniqueSellingPoints || [],
+    franchiseTags: franchiseTagsFromAPI,
 
     // Expansion Data
-    currentOutletLocations: brandDoc.expansionlocationdata
-      ?.currentOutletLocations || {
+    currentOutletLocations: brandDoc.expansionlocationdata?.currentOutletLocations || {
       domestic: { locations: [] },
       international: { country: [] },
     },
@@ -79,8 +98,8 @@ const flattenBrandData = (brandDoc) => {
       domestic: { locations: [] },
       international: { country: [] },
     },
-    isInternationalExpansion:
-      brandDoc.expansionlocationdata?.isInternationalExpansion || false,
+    isInternationalExpansion: brandDoc.expansionlocationdata?.isInternationalExpansion || false,
+    
     // Uploads
     brandLogo: brandDoc.uploads?.logo || [],
     exteriorOutlet: brandDoc.uploads?.exteriorOutlet || [],
@@ -92,7 +111,30 @@ const flattenBrandData = (brandDoc) => {
     awards: brandDoc.uploads?.awards || [],
   };
 };
+
 const BrandListingEdit = () => {
+  const params = useParams();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+    
+   const uuid = userId ||params?.uuid || 
+               location?.state?.uuid || 
+               searchParams.get("uuid") ||
+               localStorage.getItem("brandUUID") || 
+               localStorage.getItem("investorUUID");
+
+  console.log("🔍 UUID from different sources:", {
+    params: params?.uuid,
+    location: location?.state?.uuid,
+    searchParams: searchParams.get("uuid"),
+    localStorageBrand: localStorage.getItem("brandUUID"),
+    localStorageInvestor: localStorage.getItem("investorUUID"),
+    finalUUID: uuid
+  });
+    // if (!uuid) return;
+
+    // setSaveStatus({ loading: true, success: false, error: "" });
+
   const [formData, setFormData] = useState({});
   const [originalData, setOriginalData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -102,6 +144,10 @@ const BrandListingEdit = () => {
     success: false,
     error: "",
   });
+
+  //  const  id  = useParams();
+  // console.log("Brand ID:", id.uuid);
+
   const [isEditing, setIsEditing] = useState(false);
   const [showOtpDialog, setShowOtpDialog] = useState(false);
   const [expanded, setExpanded] = useState("panel1");
@@ -155,6 +201,8 @@ const BrandListingEdit = () => {
       international: { country: [], states: {}, city: {} },
     },
   });
+  //  const UUID = id?.uuid;
+  //  console.log("Brand ID:", UUID);
 
   useEffect(() => {
     const fetchBrandData = async () => {
@@ -169,15 +217,19 @@ const BrandListingEdit = () => {
       }
 
       try {
-        const url = `https://mrfranchisebackend.mrfranchise.in/api/v1/brandlisting/getBrandById/${uuid}`;
+        const url = `http://localhost:5000/api/v1/brandlisting/getBrandById/${uuid}`;
         const response = await getApi(url);
         const brand = response?.data?.data;
 
-        // console.log("Fetched brand data:", brand);
+ console.log("🔍 PARENT - Raw API response:", response);
+      console.log("🔍 PARENT - Fetched brand data:", brand);
+      console.log("🔍 PARENT - Franchise details:", brand?.franchiseDetails);
+      console.log("🔍 PARENT - Franchise tags:", brand?.franchiseDetails?.franchiseTags);
 
         if (response.data.success) {
           const flatData = flattenBrandData(brand);
-          // console.log("Flattened brand data:", flatData);
+console.log("🔍 PARENT - Flattened brand data:", flatData);
+        console.log("🔍 PARENT - Flattened franchiseTags:", flatData.franchiseTags);
           setFormData(flatData);
           setOriginalData(brand);
         } else {
@@ -191,7 +243,7 @@ const BrandListingEdit = () => {
     };
 
     fetchBrandData();
-  }, []);
+  }, [uuid]);
 
   const handleFormChange = (field, value) => {
     setFormData((prev) => ({
@@ -210,29 +262,56 @@ const BrandListingEdit = () => {
     }));
   };
 
-  const handleArrayChange = (field, value) => {
-    if (field === "awards") {
-      // For awards, we need to preserve both description and image data
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
-  };
-  const handleObjectChange = (field, key, value) => {
-    setFormData((prev) => ({
+ const handleArrayChange = (field, value) => {
+  console.log(`🔄 Updating ${field}:`, value);
+  
+  // Special handling for awards array
+  if (field === "awards") {
+    setFormData(prev => ({
       ...prev,
-      [field]: {
-        ...prev[field],
-        [key]: value,
-      },
+      [field]: value
     }));
-  };
+  } else {
+    // For all other arrays including fico
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }
+};
+ const handleObjectChange = (field, keyOrValue, maybeValue) => {
+  console.log(`📝 Object change - Field: ${field}, KeyOrValue:`, keyOrValue, "MaybeValue:", maybeValue);
+  
+
+  
+  setFormData((prev) => {
+    // Case 1: Replace whole object (FranchiseDetailsEdit passes object for franchiseTags)
+    if (field === "franchiseTags" && typeof keyOrValue === "object" && maybeValue === undefined) {
+      console.log("📦 Updating entire franchiseTags object:", keyOrValue);
+      return {
+        ...prev,
+        [field]: keyOrValue,
+      };
+    }
+
+    // Case 2: Update nested key (for other objects like brandCategories)
+    if (typeof maybeValue !== 'undefined') {
+      return {
+        ...prev,
+        [field]: {
+          ...prev[field],
+          [keyOrValue]: maybeValue,
+        },
+      };
+    }
+
+    // Case 3: If only two arguments provided and second is not an object
+    return {
+      ...prev,
+      [field]: keyOrValue,
+    };
+  });
+};
 
   const handleFileChange = (field, newFiles) => {
     setFiles((prev) => ({
@@ -299,7 +378,7 @@ const BrandListingEdit = () => {
   const sendOtp = async () => {
     try {
       const response = await axios.post(
-        `https://mrfranchisebackend.mrfranchise.in/api/v1/otpverify/send-otp-email`,
+        `http://localhost:5000/api/v1/otpverify/send-otp-email`,
         {
           email: formData.email,
         },
@@ -329,7 +408,7 @@ const BrandListingEdit = () => {
 
     try {
       const response = await axios.post(
-        `https://mrfranchisebackend.mrfranchise.in/api/v1/otpverify/verify-otp`,
+        `http://localhost:5000/api/v1/otpverify/verify-otp`,
         {
           identifier: formData.email,
           otp: otp,
@@ -360,16 +439,38 @@ const BrandListingEdit = () => {
   };
 
   const handleSave = async () => {
-    const uuid =
-      localStorage.getItem("brandUUID") || localStorage.getItem("investorUUID");
-    if (!uuid) return;
-
+  console.log("💾 Save attempted with UUID:", uuid);
+  console.log("💾 FormData being saved:", formData);
+  console.log("💾 FICO data being saved:", formData.fico);
+  console.log("💾 Franchise tags being saved:", formData.franchiseTags);
+      if (!uuid) {
+      setSaveStatus({
+        loading: false,
+        success: false,
+        error: "No UUID found for saving.",
+      });
+      return;
+    }
     setSaveStatus({ loading: true, success: false, error: "" });
-
+     
     try {
       // Step 1: Update brand details and franchise details
       const formDataToSend = new FormData();
 
+   const franchiseTagsForBackend = { 
+      PrimaryClassifications: formData.franchiseTags?.PrimaryClassifications || [],
+      ProductServiceTypes: formData.franchiseTags?.ProductServiceTypes || [],
+      TargetAudience: formData.franchiseTags?.TargetAudience || [],
+      ServiceModel: formData.franchiseTags?.ServiceModel || [],
+      PricingValue: formData.franchiseTags?.PricingValue || [],
+      AmbienceExperience: formData.franchiseTags?.AmbienceExperience || [],
+      FeaturesAmenities: formData.franchiseTags?.FeaturesAmenities || [],
+      TechnologyIntegration: formData.franchiseTags?.TechnologyIntegration || [],
+      SustainabilityEthics: formData.franchiseTags?.SustainabilityEthics || [],
+      BusinessOperations: formData.franchiseTags?.BusinessOperations || [],
+    };
+
+    console.log("💾 Final franchiseTags for backend:", franchiseTagsForBackend);
       // Prepare the data structure that matches the backend expectation
       const updateData = {
         brandDetails: {
@@ -409,9 +510,9 @@ const BrandListingEdit = () => {
           franchiseOutlets: formData.franchiseOutlets,
           franchiseSinceYear: formData.franchiseSinceYear,
           totalOutlets: formData.totalOutlets,
-          fico: formData.fico,
-          trainingSupport: formData.trainingSupport,
+          fico: formData.fico || [],
           uniqueSellingPoints: formData.uniqueSellingPoints,
+          franchiseTags: franchiseTagsForBackend,
         },
       };
 
@@ -436,17 +537,22 @@ const BrandListingEdit = () => {
         "isInternationalExpansion",
         formData.isInternationalExpansion
       );
+          console.log("Saving franchiseTags:", updateData.franchiseDetails.franchiseTags);
+
 
       // First update the brand details
+      console.log("Sending data to API:", { uuid, formDataToSend });
       const detailsResponse = await axios.patch(
-        `https://mrfranchisebackend.mrfranchise.in/api/v1/brandlisting/updateBrandListingByUUID/${uuid}`,
+        `http://localhost:5000/api/v1/brandlisting/updateBrandListingByUUID/${uuid}`,
         formDataToSend,
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
+      console.log("API Response:", detailsResponse.data);
 
       if (!detailsResponse.data.success) {
         throw new Error(
@@ -511,7 +617,7 @@ const BrandListingEdit = () => {
       // Only make the upload request if there are files to upload or delete
       if (hasFilesToUpload) {
         const uploadResponse = await axios.patch(
-          `https://mrfranchisebackend.mrfranchise.in/api/v1/brandlisting/updateBrandImageById/${uuid}`,
+          `http://localhost:5000/api/v1/brandlisting/updateBrandImageById/${uuid}`,
           uploadFormData,
           {
             headers: {
@@ -529,7 +635,7 @@ const BrandListingEdit = () => {
 
       // Refresh the data after successful update
       const refreshResponse = await getApi(
-        `https://mrfranchisebackend.mrfranchise.in/api/v1/brandlisting/getBrandById/${uuid}`
+        `http://localhost:5000/api/v1/brandlisting/getBrandById/${uuid}`
       );
       const updatedBrand = refreshResponse?.data?.data;
 
