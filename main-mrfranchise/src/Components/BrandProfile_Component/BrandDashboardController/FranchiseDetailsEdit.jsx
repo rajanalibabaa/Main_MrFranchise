@@ -134,6 +134,7 @@ const FranchiseDetailsEdit = ({
   // Fetch industries on component mount
   useEffect(() => {
     fetchIndustries();
+    fetchIndustryDetails();
   }, []);
 
   // Fetch industries list
@@ -155,12 +156,14 @@ const FranchiseDetailsEdit = ({
 
   // Fetch industry details when an industry is selected
   const fetchIndustryDetails = async (industryName) => {
-    if (!industryName) return;
+    // if (!industryName) return;
+    const  industry =  industryName || data.brandCategories.main
+    console.log("industry",industry)
  
     try {
       setLoadingIndustryDetails(true);
       const response = await fetch(
-        `http://localhost:5000/api/v1/admin/getIndustryByIndustryName?industry=${encodeURIComponent(industryName)}`
+        `http://localhost:5000/api/v1/admin/getIndustryByIndustryName?industry=${encodeURIComponent(industry)}`
       );
       const result = await response.json();
    
@@ -626,6 +629,7 @@ const FranchiseDetailsEdit = ({
     onObjectChange("brandCategories", newCategory);
   };
 
+  
   const handleSubCategoryChange = (e) => {
     const subCategory = e.target.value;
     
