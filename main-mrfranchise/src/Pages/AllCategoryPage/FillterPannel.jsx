@@ -30,6 +30,21 @@ import {
   resetCities,
 } from "../../Redux/Slices/filterDropdownData";
 
+// Define the correct order for investment ranges
+const INVESTMENT_RANGE_ORDER = [
+  "Below - 50k",
+  "Rs. 50k - 2 Lakhs", 
+  "Rs. 2 Lakhs - 5 Lakhs",
+  "Rs. 5 Lakhs - 10 Lakhs",
+  "Rs. 10 Lakhs - 20 Lakhs",
+  "Rs. 20 Lakhs - 30 Lakhs",
+  "Rs. 30 Lakhs - 50 Lakhs",
+  "Rs. 50 Lakhs - 1 Crore",
+  "Rs. 1 Crores - 2 Crores",
+  "Rs. 2 Crores - 5 Crores",
+  "Rs. 5 Crores - above"
+];
+
 const FilterPanel = React.memo(
   ({
     filters,
@@ -184,15 +199,33 @@ const FilterPanel = React.memo(
         .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()));
     }, [franchiseModels, searchTerms.modelType]);
 
+    // FIXED: Maintain the original order for investment ranges
     const filteredInvestmentRanges = useMemo(() => {
       const term = (searchTerms.investmentRange || '').toLowerCase();
-      return investmentRanges
-        .filter((range) => {
-          if (!range) return false;
-          return range.toLowerCase().includes(term);
-        })
-        .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
-        .slice(0, 50);
+      
+      // First filter by search term
+      const filtered = investmentRanges.filter((range) => {
+        if (!range) return false;
+        return range.toLowerCase().includes(term);
+      });
+      
+      // Sort by predefined order, not alphabetically
+      return filtered.sort((a, b) => {
+        const indexA = INVESTMENT_RANGE_ORDER.indexOf(a);
+        const indexB = INVESTMENT_RANGE_ORDER.indexOf(b);
+        
+        // If both are in the predefined order, sort by that order
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        
+        // If only one is in predefined order, put it first
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        // If neither is in predefined order, sort alphabetically
+        return a.toLowerCase().localeCompare(b.toLowerCase());
+      });
     }, [investmentRanges, searchTerms.investmentRange]);
 
     const filteredAreaRequired = useMemo(() => {
@@ -228,17 +261,17 @@ const FilterPanel = React.memo(
         .slice(0, 100);
     }, [filters.state, districts, searchTerms.district]);
 
-    const filteredCities = useMemo(() => {
-      if (!filters.district) return [];
-      const term = (searchTerms.city || '').toLowerCase();
-      return cities
-        .filter((c) => {
-          if (!c) return false;
-          return c.toLowerCase().includes(term);
-        })
-        .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
-        .slice(0, 100);
-    }, [filters.district, cities, searchTerms.city]);
+    // const filteredCities = useMemo(() => {
+    //   if (!filters.district) return [];
+    //   const term = (searchTerms.city || '').toLowerCase();
+    //   return cities
+    //     .filter((c) => {
+    //       if (!c) return false;
+    //       return c.toLowerCase().includes(term);
+    //     })
+    //     .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
+    //     .slice(0, 100);
+    // }, [filters.district, cities, searchTerms.city]);
 
     const scrollToSection = (ref) => {
       if (ref.current) {
@@ -906,8 +939,6 @@ const FilterPanel = React.memo(
                                     </Box>
                                   ) : (
                                     <>
-                                    
-
                                       <RadioGroup
                                         value={filters.city || ""}
                                         onChange={(e) =>
