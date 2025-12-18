@@ -52,3 +52,22 @@ export const GetApiCall = async(url, params = {}) => {
     }
     return res;
 }
+
+export const PostApiCall = async (url, payload = {}) => {
+  try {
+    const res = await axios.post(
+      url,
+      payload, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error in API Call");
+  }
+};
