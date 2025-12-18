@@ -43,6 +43,8 @@ export const fetchFilteredBrands = createAsyncThunk(
       if (modelType) params.append('modelType', modelType);
             if (areaRequired) params.append("areaRequired", areaRequired); // ✅ Fixed areaRequired param
 
+      console.log("url :",`${API_BASE_URL}filter/getAllBrandsAndFilter?${params.toString()}`);
+      
       const response = await axios.get(`${API_BASE_URL}filter/getAllBrandsAndFilter?${params.toString()}`);
 
       // Normalize the brand data to ensure consistent structure
