@@ -404,7 +404,7 @@ const NavbarSearch = ({ open, handleClose }) => {
     if (selectedInvestmentRange)
       queryParams.append("investmentRange", selectedInvestmentRange);
 
-    console.log("searchTerm :",searchTerm)
+    console.log("searchTerm :", searchTerm);
     // ✅ open new tab with filters in URL
     window.open(
       `/brandViewPage?${queryParams.toString()}`,
@@ -485,465 +485,253 @@ const NavbarSearch = ({ open, handleClose }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogContent sx={{ p: 3, background: "#d5e7ddac" }}>
-        {/* Close Button */}
-        <IconButton
-          onClick={handleClose}
-          sx={{
-            position: "absolute",
-            top: { xs: -5, md: 8 },
-            right: { xs: -5, md: 8 },
+  <DialogContent sx={{ p: 3, background: "#d5e7ddac", position: "relative" }}>
+    {/* Close Button */}
+    <Box>
+      <IconButton
+        onClick={handleClose}
+        sx={{
+          position: "absolute",
+          top: { xs: -5, md: 8 },
+          right: { xs: -5, md: 8 },
+          color: "error.main",
+          "&:hover": {
+            backgroundColor: "error.main",
+            color: "#fff",
+          },
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {/* Search Input */}
+    <Box display="flex" justifyContent="center" mb={2}>
+      <Search handleClose={handleClose} />
+    </Box>
+
+    {/* Active Filters */}
+    <Box display="flex" justifyContent="center" flexWrap="wrap" gap={1} mb={2}>
+      {selectedMainCategory && (
+        <Chip
+          label={`Industry: ${selectedMainCategory}`}
+          onDelete={() => {
+            setSelectedMainCategory("");
+            setSelectedSubCategory("");
+            setSelectedChildCategory("");
           }}
-        >
-          <CloseIcon color="error" />
-        </IconButton>
-
-        {/* Search Input with Suggestions */}
-        <Box display="flex" justifyContent="center" mb={2} position="relative">
-          <Search 
-            handleClose = {handleClose}
-          />
-        </Box>
-
-        {/* Active Filters */}
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexWrap="wrap"
-          gap={1}
-          mb={2}
-        >
-          {selectedMainCategory && (
-            <Chip
-              label={`Industry: ${selectedMainCategory}`}
-              onDelete={() => {
-                setSelectedMainCategory("");
-                setSelectedSubCategory("");
-                setSelectedChildCategory("");
-              }}
-            />
-          )}
-          {selectedSubCategory && (
-            <Chip
-              label={`Category: ${selectedSubCategory}`}
-              onDelete={() => {
-                setSelectedSubCategory("");
-                setSelectedChildCategory("");
-              }}
-            />
-          )}
-          {selectedChildCategory && (
-            <Chip
-              label={`Sub-Category: ${selectedChildCategory}`}
-              onDelete={() => setSelectedChildCategory("")}
-            />
-          )}
-          {selectedState && (
-            <Chip
-              label={`State: ${selectedState}`}
-              onDelete={() => {
-                setSelectedState("");
-                setSelectedDistrict("");
-                setSelectedCity("");
-              }}
-            />
-          )}
-          {selectedDistrict && (
-            <Chip
-              label={`District: ${selectedDistrict}`}
-              onDelete={() => {
-                setSelectedDistrict("");
-                setSelectedCity("");
-              }}
-            />
-          )}
-          {selectedCity && (
-            <Chip
-              label={`City: ${selectedCity}`}
-              onDelete={() => setSelectedCity("")}
-            />
-          )}
-          {selectedInvestmentRange && (
-            <Chip
-              label={`Investment: ${selectedInvestmentRange}`}
-              onDelete={() => setSelectedInvestmentRange("")}
-            />
-          )}
-        </Box>
-
-        {/* Explore Text */}
-        <Typography
-          variant="body1"
-          align="center"
-          color="text.secondary"
-          sx={{ mb: 2 }}
-        >
-          Or Explore By
-        </Typography>
-
-        {/* Tabs */}
-        <Tabs
-          value={tab}
-          onChange={handleTabChange}
-          centered
-          textColor="error"
-          sx={{
-            mb: 2,
-            gap: { xs: "1px", md: "5px" }, // ✅ gap 2px on mobile, 1px on desktop
-            "& .MuiTab-root": {
-              minWidth: "auto", // ✅ prevents large default widths
-              px: { xs: 0.8, md: 5, sm: 5 }, // ✅ small padding on mobile
-              fontSize: { xs: "0.75rem", md: "1rem", sm: "0.9rem" },
-            },
+        />
+      )}
+      {selectedSubCategory && (
+        <Chip
+          label={`Category: ${selectedSubCategory}`}
+          onDelete={() => {
+            setSelectedSubCategory("");
+            setSelectedChildCategory("");
           }}
-        >
-          <Tab label="Categories" />
-          <Tab label="Location" />
-          <Tab label="Investment" />
-        </Tabs>
+        />
+      )}
+      {selectedChildCategory && (
+        <Chip
+          label={`Sub-Category: ${selectedChildCategory}`}
+          onDelete={() => setSelectedChildCategory("")}
+        />
+      )}
+      {selectedState && (
+        <Chip
+          label={`State: ${selectedState}`}
+          onDelete={() => {
+            setSelectedState("");
+            setSelectedDistrict("");
+            setSelectedCity("");
+          }}
+        />
+      )}
+      {selectedDistrict && (
+        <Chip
+          label={`District: ${selectedDistrict}`}
+          onDelete={() => {
+            setSelectedDistrict("");
+            setSelectedCity("");
+          }}
+        />
+      )}
+      {selectedCity && (
+        <Chip
+          label={`City: ${selectedCity}`}
+          onDelete={() => setSelectedCity("")}
+        />
+      )}
+      {selectedInvestmentRange && (
+        <Chip
+          label={`Investment: ${selectedInvestmentRange}`}
+          onDelete={() => setSelectedInvestmentRange("")}
+        />
+      )}
+    </Box>
 
-        {/* Tab Content */}
-        {tab === 0 && (
-          <Box
-            display="flex"
-            flexWrap="wrap"
-            gap={2}
-            justifyContent="center"
-            mb={3}
-          >
-            {/* Main Category Filter */}
-            <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
-              <Autocomplete
-                options={[...filteredMainCategories].sort((a, b) =>
-                  (a || "").localeCompare(b || "", undefined, {
-                    sensitivity: "base",
-                  })
-                )}
-                value={selectedMainCategory}
-                onChange={(_, newValue) => {
-                  setSelectedMainCategory(newValue);
-                  setSelectedSubCategory("");
-                  setSelectedChildCategory("");
-                }}
-                inputValue={searchTerms.mainCategory}
-                onInputChange={(_, newInputValue) => {
-                  handleSearchChange("mainCategory", newInputValue);
-                }}
-                ListboxComponent={CustomListbox}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Industry"
-                    variant="outlined"
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {dropdownLoading && selectedMainCategory && (
-                            <CircularProgress color="black" size={20} />
-                          )}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-                loading={dropdownLoading}
-                disabled={dropdownLoading}
-              />
-            </FormControl>
+    <Typography align="center" color="text.secondary" sx={{ mb: 2 }}>
+      Or Explore By
+    </Typography>
 
-            {/* Sub Category Filter - dependent on selected main category */}
-            <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
-              <Autocomplete
-                options={[...filteredSubCategories].sort((a, b) =>
-                  (a || "").localeCompare(b || "", undefined, {
-                    sensitivity: "base",
-                  })
-                )}
-                value={selectedSubCategory}
-                onChange={(_, newValue) => {
-                  setSelectedSubCategory(newValue);
-                  setSelectedChildCategory("");
-                }}
-                inputValue={searchTerms.subCategory}
-                onInputChange={(_, newInputValue) => {
-                  handleSearchChange("subCategory", newInputValue);
-                }}
-                ListboxComponent={CustomListbox}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Category"
-                    variant="outlined"
-                    disabled={!selectedMainCategory || dropdownLoading}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {dropdownLoading && selectedSubCategory && (
-                            <CircularProgress color="inherit" size={20} />
-                          )}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-                loading={dropdownLoading}
-                disabled={!selectedMainCategory || dropdownLoading}
-              />
-            </FormControl>
+    {/* Tabs */}
+    <Tabs
+      value={tab}
+      onChange={handleTabChange}
+      centered
+      textColor="error"
+      sx={{
+        mb: 2,
+        "& .MuiTab-root": {
+          minWidth: "auto",
+          px: { xs: 1, md: 5 },
+          fontSize: { xs: "0.75rem", md: "1rem" },
+        },
+      }}
+    >
+      <Tab label="Categories" />
+      <Tab label="Location" />
+      <Tab label="Investment" />
+    </Tabs>
 
-            {/* Child Category Filter - dependent on selected sub category */}
-            {/* <FormControl sx={{ minWidth: { xs: 200, md: 600 } }}>
-              <Autocomplete
-                options={filteredChildCategories}
-                value={selectedChildCategory}
-                onChange={(_, newValue) => {
-                  setSelectedChildCategory(newValue);
-                }}
-                inputValue={searchTerms.childCategory}
-                onInputChange={(_, newInputValue) => {
-                  handleSearchChange('childCategory', newInputValue);
-                }}
-                ListboxComponent={CustomListbox}
-                renderInput={(params) => (
-                  <TextField 
-                    {...params} 
-                    label="Sub Category" 
-                    variant="outlined"
-                    disabled={!selectedSubCategory || dropdownLoading}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {dropdownLoading && selectedChildCategory && (
-                            <CircularProgress color="inherit" size={20} />
-                          )}
-                          {params.InputProps.endAdornment}
-                        </>
-                      )
-                    }}
-                  />
-                )}
-                loading={dropdownLoading}
-                disabled={!selectedSubCategory || dropdownLoading}
-              />
-            </FormControl> */}
-          </Box>
-        )}
-
-        {tab === 1 && (
-          <Box
-            display="flex"
-            flexWrap="wrap"
-            gap={2}
-            justifyContent="center"
-            mb={3}
-          >
-            {/* State Filter */}
-            <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
-              <Autocomplete
-                options={[...filteredStates].sort((a, b) =>
-                  (a || "").localeCompare(b || "", undefined, {
-                    sensitivity: "base",
-                  })
-                )}
-                value={selectedState}
-                onChange={(_, newValue) => {
-                  setSelectedState(newValue);
-                  setSelectedDistrict("");
-                  setSelectedCity("");
-                }}
-                inputValue={searchTerms.state}
-                onInputChange={(_, newInputValue) => {
-                  handleSearchChange("state", newInputValue);
-                }}
-                ListboxComponent={CustomListbox}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="State"
-                    variant="outlined"
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {dropdownLoading && selectedState && (
-                            <CircularProgress color="inherit" size={20} />
-                          )}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-                loading={dropdownLoading}
-                disabled={dropdownLoading}
-              />
-            </FormControl>
-
-            {/* District Filter - dependent on selected state */}
-            <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
-              <Autocomplete
-                options={[...filteredDistricts].sort((a, b) =>
-                  (a || "").localeCompare(b || "", undefined, {
-                    sensitivity: "base",
-                  })
-                )}
-                value={selectedDistrict}
-                onChange={(_, newValue) => {
-                  setSelectedDistrict(newValue);
-                  setSelectedCity("");
-                }}
-                inputValue={searchTerms.district}
-                onInputChange={(_, newInputValue) => {
-                  handleSearchChange("district", newInputValue);
-                }}
-                ListboxComponent={CustomListbox}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="District"
-                    variant="outlined"
-                    disabled={!selectedState || dropdownLoading}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {dropdownLoading && selectedDistrict && (
-                            <CircularProgress color="inherit" size={20} />
-                          )}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-                loading={dropdownLoading}
-                disabled={!selectedState || dropdownLoading}
-              />
-            </FormControl>
-
-            {/* City Filter - dependent on selected district */}
-            {/* <FormControl sx={{ minWidth: { xs: 200, md: 600 } }}>
-              <Autocomplete
-                options={filteredCities}
-                value={selectedCity}
-                onChange={(_, newValue) => {
-                  setSelectedCity(newValue);
-                }}
-                inputValue={searchTerms.city}
-                onInputChange={(_, newInputValue) => {
-                  handleSearchChange('city', newInputValue);
-                }}
-                ListboxComponent={CustomListbox}
-                renderInput={(params) => (
-                  <TextField 
-                    {...params} 
-                    label="City" 
-                    variant="outlined"
-                    disabled={!selectedDistrict || dropdownLoading}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {dropdownLoading && selectedCity && (
-                            <CircularProgress color="inherit" size={20} />
-                          )}
-                          {params.InputProps.endAdornment}
-                        </>
-                      )
-                    }}
-                  />
-                )}
-                loading={dropdownLoading}
-                disabled={!selectedDistrict || dropdownLoading}
-              />
-            </FormControl> */}
-          </Box>
-        )}
-
-        {tab === 2 && (
-          <Box
-            display="flex"
-            flexWrap="wrap"
-            gap={2}
-            justifyContent="center"
-            mb={3}
-          >
-            <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
-              <Autocomplete
-                options={[...filteredInvestmentRanges].sort((a, b) =>
-                  (a || "").localeCompare(b || "", undefined, {
-                    sensitivity: "base",
-                  })
-                )}
-                value={selectedInvestmentRange}
-                onChange={(_, newValue) => {
-                  setSelectedInvestmentRange(newValue);
-                }}
-                inputValue={searchTerms.investment}
-                onInputChange={(_, newInputValue) => {
-                  handleSearchChange("investment", newInputValue);
-                }}
-                ListboxComponent={CustomListbox}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Investment Range"
-                    variant="outlined"
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {dropdownLoading && selectedInvestmentRange && (
-                            <CircularProgress color="inherit" size={20} />
-                          )}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-                loading={dropdownLoading}
-                disabled={dropdownLoading}
-              />
-            </FormControl>
-          </Box>
-        )}
-
-        {/* Action Buttons */}
-        <Box display="flex" justifyContent="center" gap={2}>
-          <Button
-            variant="contained"
-            onClick={handleExplore}
-            disabled={loading}
-            sx={{
-              backgroundColor: "#7ad03a",
-              "&:hover": { backgroundColor: "rgb(104, 159, 56)" },
-              textTransform: "none",
+    {/* TAB 1 — CATEGORIES */}
+    {tab === 0 && (
+      <Box display="flex" flexWrap="wrap" gap={2} justifyContent="center" mb={3}>
+        <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
+          <Autocomplete
+            options={filteredMainCategories}
+            value={selectedMainCategory}
+            onChange={(_, v) => {
+              setSelectedMainCategory(v);
+              setSelectedSubCategory("");
+              setSelectedChildCategory("");
             }}
-          >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Explore"
+            inputValue={searchTerms.mainCategory}
+            onInputChange={(_, v) =>
+              handleSearchChange("mainCategory", v)
+            }
+            ListboxComponent={CustomListbox}
+            renderInput={(params) => (
+              <TextField {...params} label="Industry" />
             )}
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleClearAll}
-            disabled={loading}
-            sx={{ textTransform: "none", color: "white" }}
-          >
-            Clear All
-          </Button>
-        </Box>
-      </DialogContent>
-    </Dialog>
+          />
+        </FormControl>
+
+        <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
+          <Autocomplete
+            options={filteredSubCategories}
+            value={selectedSubCategory}
+            onChange={(_, v) => {
+              setSelectedSubCategory(v);
+              setSelectedChildCategory("");
+            }}
+            inputValue={searchTerms.subCategory}
+            onInputChange={(_, v) =>
+              handleSearchChange("subCategory", v)
+            }
+            ListboxComponent={CustomListbox}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                disabled={!selectedMainCategory}
+              />
+            )}
+          />
+        </FormControl>
+      </Box>
+    )}
+
+    {/* TAB 2 — LOCATION */}
+    {tab === 1 && (
+      <Box display="flex" flexWrap="wrap" gap={2} justifyContent="center" mb={3}>
+        <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
+          <Autocomplete
+            options={filteredStates}
+            value={selectedState}
+            onChange={(_, v) => {
+              setSelectedState(v);
+              setSelectedDistrict("");
+              setSelectedCity("");
+            }}
+            inputValue={searchTerms.state}
+            onInputChange={(_, v) => handleSearchChange("state", v)}
+            renderInput={(params) => (
+              <TextField {...params} label="State" />
+            )}
+          />
+        </FormControl>
+
+        <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
+          <Autocomplete
+            options={filteredDistricts}
+            value={selectedDistrict}
+            onChange={(_, v) => {
+              setSelectedDistrict(v);
+              setSelectedCity("");
+            }}
+            inputValue={searchTerms.district}
+            onInputChange={(_, v) =>
+              handleSearchChange("district", v)
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="District"
+                disabled={!selectedState}
+              />
+            )}
+          />
+        </FormControl>
+      </Box>
+    )}
+
+    {/* TAB 3 — INVESTMENT */}
+    {tab === 2 && (
+      <Box display="flex" justifyContent="center" mb={3}>
+        <FormControl sx={{ minWidth: { xs: 270, md: 600 } }}>
+          <Autocomplete
+            options={filteredInvestmentRanges}
+            value={selectedInvestmentRange}
+            onChange={(_, v) => setSelectedInvestmentRange(v)}
+            inputValue={searchTerms.investment}
+            onInputChange={(_, v) =>
+              handleSearchChange("investment", v)
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Investment Range" />
+            )}
+          />
+        </FormControl>
+      </Box>
+    )}
+
+    {/* Action Buttons */}
+    <Box display="flex" justifyContent="center" gap={2}>
+      <Button
+        variant="contained"
+        onClick={handleExplore}
+        disabled={loading}
+        sx={{
+          backgroundColor: "#7ad03a",
+          "&:hover": { backgroundColor: "rgb(104,159,56)" },
+        }}
+      >
+        {loading ? <CircularProgress size={24} /> : "Explore"}
+      </Button>
+
+      <Button
+        variant="contained"
+        color="error"
+        onClick={handleClearAll}
+        disabled={loading}
+      >
+        Clear All
+      </Button>
+    </Box>
+  </DialogContent>
+</Dialog>
+
   );
 };
 

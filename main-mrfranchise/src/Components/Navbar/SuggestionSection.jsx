@@ -8,7 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 
-const SuggestionSection = ({ title, items = [], labelKey,  }) => {
+const SuggestionSection = ({ title, items = [], labelKey,handleSelectedSuggestionData  }) => {
   if (!items.length) return null;
 
  
@@ -25,6 +25,7 @@ const SuggestionSection = ({ title, items = [], labelKey,  }) => {
         <ListItem
           key={`${title}-${index}`}
           button
+          onClick={() => handleSelectedSuggestionData(item)}
         >
           {item.logo && (
             <ListItemAvatar>

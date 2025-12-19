@@ -15,12 +15,15 @@ import { api } from "../../Api/api";
 import SuggestionList from "./SuggestionList";
 import { fetchFilteredBrands } from "../../Redux/Slices/FilterBrandSlice";
 
-const Search = ({handleClose}) => {
+const Search = ({ handleClose }) => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const { pathname } = useLocation();
-  const isBrandViewPage = pathname === "/brandviewpage" || pathname === "/brands";
+  const isBrandViewPage =
+    pathname.startsWith("/brandViewPage") ||
+    pathname.startsWith("/brands") ||
+    pathname === "/brands";
 
   const [suggestions, setSuggestions] = useState({
     brands: [],
@@ -78,22 +81,51 @@ const Search = ({handleClose}) => {
     fetchSuggestions();
   }, [debouncedQuery]);
 
-  const hasResults = Object.values(suggestions).some(
-    (arr) => arr.length > 0
-  );
+  const hasResults = Object.values(suggestions).some((arr) => arr.length > 0);
 
-   const handleOnSearch = () => {
-    console.log("isBrandViewPage :",isBrandViewPage);
+  const handleOnSearch = (searchValue = null) => {
+    let value;
+
+    if (typeof searchValue === "string") {
+      value = searchValue;
+    } else {
+      value = query;
+    }
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (!isBrandViewPage) {
+        queryParams.append("searchTerm", value);
+
+        window.open(
+          `/brandViewPage?${queryParams.toString()}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
+
+      dispatch(
+        fetchFilteredBrands({
+          searchTerm: value,
+          page: 1,
+          limit: 20,
+        })
+      );
+      handleClose(false);
+    } catch (error) {
+      console.error("Search dispatch error:", error);
+    }
+  };
+
+  const handleSelectedSuggestionData = (selectedData) => {
     
-    dispatch(
-      fetchFilteredBrands({
-        searchTerm: query,  
-        page: 1,
-        limit: 20,
-      })
-    );
-    handleClose(false)
-    
+    let searchValue;
+    if (selectedData.brandName || selectedData.companyName) {
+      searchValue = selectedData.id;
+    } else {
+      searchValue = selectedData.tag || selectedData.industry ||selectedData.category
+    }
+    handleOnSearch(searchValue);
   };
 
   return (
@@ -132,7 +164,10 @@ const Search = ({handleClose}) => {
               <CircularProgress size={20} />
             </Box>
           ) : (
-            <SuggestionList suggestions={suggestions} />
+            <SuggestionList
+              suggestions={suggestions}
+              handleSelectedSuggestionData={handleSelectedSuggestionData}
+            />
           )}
         </Paper>
       )}
