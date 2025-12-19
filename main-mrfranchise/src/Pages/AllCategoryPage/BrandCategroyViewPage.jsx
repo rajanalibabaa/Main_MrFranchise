@@ -46,7 +46,7 @@ useEffect(() => {
   }
   navigate("/brandViewPage", { replace: true })
 
-}, [location.search, dispatch]);
+}, [location.search, dispatch,navigate]);
 
   // Generate dynamic title and description
   const seoTitle = investmentRange 

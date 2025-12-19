@@ -7,7 +7,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import SearchIcon from "@mui/icons-material/Search";
 import { GetApiCall } from "../../Api/DefaultApi";
@@ -20,10 +20,13 @@ const Search = ({ handleClose }) => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const { pathname } = useLocation();
+  const { brandId } = useParams();
+
+  const isIdExist = brandId;
   const isBrandViewPage =
     pathname.startsWith("/brandViewPage") ||
     pathname.startsWith("/brands") ||
-    pathname === "/brands";
+    pathname === "/brands" ;
 
   const [suggestions, setSuggestions] = useState({
     brands: [],
@@ -59,7 +62,9 @@ const Search = ({ handleClose }) => {
     const fetchSuggestions = async () => {
       setLoading(true);
       try {
-        const url = `${api.user.get.search}?searchTerm=${debouncedQuery}`;
+        const url = `${api.user.get.search}?searchTerm=${encodeURIComponent(
+          debouncedQuery
+        )}`;
         const response = await GetApiCall(url);
         const data = response?.data?.data || {};
         console.log("data :", data);
@@ -94,7 +99,7 @@ const Search = ({ handleClose }) => {
     try {
       const queryParams = new URLSearchParams();
 
-      if (!isBrandViewPage) {
+      if (!isBrandViewPage || isIdExist) {
         queryParams.append("searchTerm", value);
 
         window.open(
@@ -104,6 +109,8 @@ const Search = ({ handleClose }) => {
         );
       }
 
+
+      console.log("value :",value)
       dispatch(
         fetchFilteredBrands({
           searchTerm: value,
@@ -118,13 +125,15 @@ const Search = ({ handleClose }) => {
   };
 
   const handleSelectedSuggestionData = (selectedData) => {
-    
     let searchValue;
     if (selectedData.brandName || selectedData.companyName) {
       searchValue = selectedData.id;
     } else {
-      searchValue = selectedData.tag || selectedData.industry ||selectedData.category
+      searchValue =
+        selectedData.tag || selectedData.industry || selectedData.category;
     }
+          console.log("searchValue :",searchValue)
+
     handleOnSearch(searchValue);
   };
 
