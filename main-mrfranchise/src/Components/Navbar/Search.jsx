@@ -7,7 +7,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import SearchIcon from "@mui/icons-material/Search";
 import { GetApiCall } from "../../Api/DefaultApi";
@@ -15,12 +15,18 @@ import { api } from "../../Api/api";
 import SuggestionList from "./SuggestionList";
 import { fetchFilteredBrands } from "../../Redux/Slices/FilterBrandSlice";
 
-const Search = ({handleClose}) => {
+const Search = ({ handleClose }) => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const { pathname } = useLocation();
-  const isBrandViewPage = pathname === "/brandviewpage" || pathname === "/brands";
+  const { brandId } = useParams();
+
+  const isIdExist = brandId;
+  const isBrandViewPage =
+    pathname.startsWith("/brandViewPage") ||
+    pathname.startsWith("/brands") ||
+    pathname === "/brands" ;
 
   const [suggestions, setSuggestions] = useState({
     brands: [],
@@ -56,7 +62,9 @@ const Search = ({handleClose}) => {
     const fetchSuggestions = async () => {
       setLoading(true);
       try {
-        const url = `${api.user.get.search}?searchTerm=${debouncedQuery}`;
+        const url = `${api.user.get.search}?searchTerm=${encodeURIComponent(
+          debouncedQuery
+        )}`;
         const response = await GetApiCall(url);
         const data = response?.data?.data || {};
         console.log("data :", data);
@@ -78,22 +86,55 @@ const Search = ({handleClose}) => {
     fetchSuggestions();
   }, [debouncedQuery]);
 
-  const hasResults = Object.values(suggestions).some(
-    (arr) => arr.length > 0
-  );
+  const hasResults = Object.values(suggestions).some((arr) => arr.length > 0);
 
-   const handleOnSearch = () => {
-    console.log("isBrandViewPage :",isBrandViewPage);
-    
-    dispatch(
-      fetchFilteredBrands({
-        searchTerm: query,  
-        page: 1,
-        limit: 20,
-      })
-    );
-    handleClose(false)
-    
+  const handleOnSearch = (searchValue = null) => {
+    let value;
+
+    if (typeof searchValue === "string") {
+      value = searchValue;
+    } else {
+      value = query;
+    }
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (!isBrandViewPage || isIdExist) {
+        queryParams.append("searchTerm", value);
+
+        window.open(
+          `/brandViewPage?${queryParams.toString()}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
+
+
+      console.log("value :",value)
+      dispatch(
+        fetchFilteredBrands({
+          searchTerm: value,
+          page: 1,
+          limit: 20,
+        })
+      );
+      handleClose(false);
+    } catch (error) {
+      console.error("Search dispatch error:", error);
+    }
+  };
+
+  const handleSelectedSuggestionData = (selectedData) => {
+    let searchValue;
+    if (selectedData.brandName || selectedData.companyName) {
+      searchValue = selectedData.id;
+    } else {
+      searchValue =
+        selectedData.tag || selectedData.industry || selectedData.category;
+    }
+          console.log("searchValue :",searchValue)
+
+    handleOnSearch(searchValue);
   };
 
   return (
@@ -132,7 +173,10 @@ const Search = ({handleClose}) => {
               <CircularProgress size={20} />
             </Box>
           ) : (
-            <SuggestionList suggestions={suggestions} />
+            <SuggestionList
+              suggestions={suggestions}
+              handleSelectedSuggestionData={handleSelectedSuggestionData}
+            />
           )}
         </Paper>
       )}

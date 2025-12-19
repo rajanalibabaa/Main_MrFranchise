@@ -159,6 +159,7 @@ function BrandList() {
 
   const handleClearFilters = useCallback(() => {
     dispatch(resetFilters());
+    dispatch(fetchFilteredBrands(filters))
   }, [dispatch]);
 
   const handlePageChange = useCallback(

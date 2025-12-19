@@ -6,17 +6,23 @@ import {
   Avatar,
   Typography,
   Divider,
+  Box,
 } from "@mui/material";
 
-const SuggestionSection = ({ title, items = [], labelKey,  }) => {
+const SuggestionSection = ({ title, items = [], labelKey,handleSelectedSuggestionData  }) => {
   if (!items.length) return null;
 
  
   return (
     <>
+    <Box
+      sx={{ mt: 1,px:2}}
+    >
+
+   
       <Typography
         variant="caption"
-        sx={{ px: 2, pt: 1, fontWeight: 600 }}
+        sx={{ px: 2, pt: 1, fontWeight: 600 ,color:"#f79f24ff",fontSize:"1rem"}}
       >
         {title}
       </Typography>
@@ -25,6 +31,7 @@ const SuggestionSection = ({ title, items = [], labelKey,  }) => {
         <ListItem
           key={`${title}-${index}`}
           button
+          onClick={() => handleSelectedSuggestionData(item)}
         >
           {item.logo && (
             <ListItemAvatar>
@@ -36,6 +43,7 @@ const SuggestionSection = ({ title, items = [], labelKey,  }) => {
       ))}
 
       <Divider />
+       </Box>
     </>
   );
 };

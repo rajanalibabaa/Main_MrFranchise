@@ -348,7 +348,7 @@ const FilterPanel = React.memo(
           </Link>
         </Breadcrumbs>
 
-        <TextField
+        {/* <TextField
           fullWidth
           variant="outlined"
           placeholder="Search brands..."
@@ -358,7 +358,7 @@ const FilterPanel = React.memo(
             startAdornment: <SearchIcon sx={{ mr: 1, color: "#ff9800" }} />,
           }}
           sx={{ mb: 3 }}
-        />
+        /> */}
         {/* Main Category Filter */}
         <Accordion
           ref={mainCategoryRef}
