@@ -73,6 +73,8 @@ const HomePageBrandCard = React.memo(
     const shortlistButtonRef = useRef(null);
     const likeButtonRef = useRef(null);
 
+    console.log("Rendering HomePageBrandCard for brand:", brand);
+
     const brandId = brand?.uuid || "";
     const franchiseModel = brand?.fico || {};
     const category = brand?.brandCategories || {};

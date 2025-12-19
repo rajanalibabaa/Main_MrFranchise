@@ -270,6 +270,8 @@ const SideViewContent = ({ hoverCategory, onHoverLeave, onBrandClick }) => {
     }
   }, [hoverCategory]);
 
+  
+
   // Fetch subcategories for selected industry
   const fetchSubCategories = useCallback(async (industry) => {
     if (!industry) return [];
@@ -836,7 +838,7 @@ const SideViewContent = ({ hoverCategory, onHoverLeave, onBrandClick }) => {
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Chip
-                label={`click to view${brands.length} brands`}
+                label={`click to view ${brands.length} brands`}
                 component="button"
                 size="small"
                 color="warning"
