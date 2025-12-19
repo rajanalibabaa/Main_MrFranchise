@@ -30,6 +30,21 @@ import {
   resetCities,
 } from "../../Redux/Slices/filterDropdownData";
 
+// Define the correct order for investment ranges
+const INVESTMENT_RANGE_ORDER = [
+  "Below - 50k",
+  "Rs. 50k - 2 Lakhs", 
+  "Rs. 2 Lakhs - 5 Lakhs",
+  "Rs. 5 Lakhs - 10 Lakhs",
+  "Rs. 10 Lakhs - 20 Lakhs",
+  "Rs. 20 Lakhs - 30 Lakhs",
+  "Rs. 30 Lakhs - 50 Lakhs",
+  "Rs. 50 Lakhs - 1 Crore",
+  "Rs. 1 Crores - 2 Crores",
+  "Rs. 2 Crores - 5 Crores",
+  "Rs. 5 Crores - above"
+];
+
 const FilterPanel = React.memo(
   ({
     filters,
@@ -128,12 +143,13 @@ const FilterPanel = React.memo(
       const subcat = params.get("subcat");
       const state = params.get("state");
       const investmentRange = params.get("investmentRange");
+      const areaRequiredParam = params.get("areaRequired");
 
       if (maincat) onFilterChange("maincat", maincat);
       if (subcat) onFilterChange("subcat", subcat);
       if (state) onFilterChange("state", state);
       if (investmentRange) onFilterChange("investmentRange", investmentRange);
-      if (areaRequired) onFilterChange("areaRequired", areaRequired);
+      if (areaRequiredParam) onFilterChange("areaRequired", areaRequiredParam);
     }, [onFilterChange]);
 
     const toggleSection = (section) => {
@@ -146,94 +162,116 @@ const FilterPanel = React.memo(
 
     // Filter and sort options based on search terms (alphabetical order)
     const filteredMainCategories = useMemo(() => {
-      const term = searchTerms.mainCategory.toLowerCase();
+      const term = (searchTerms.mainCategory || '').toLowerCase();
       return mainCategories
-        .filter((main) => main?.toLowerCase().includes(term))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .filter((main) => {
+          if (!main) return false;
+          return main.toLowerCase().includes(term);
+        })
+        .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
         .slice(0, 100);
     }, [mainCategories, searchTerms.mainCategory]);
 
     const filteredSubCategories = useMemo(() => {
-      const term = searchTerms.subCategory.toLowerCase();
+      const term = (searchTerms.subCategory || '').toLowerCase();
       return subCategories
-        .filter((sub) => sub?.toLowerCase().includes(term))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .filter((sub) => {
+          if (!sub) return false;
+          return sub.toLowerCase().includes(term);
+        })
+        .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
         .slice(0, 100);
     }, [subCategories, searchTerms.subCategory]);
 
     const sortedChildCategories = useMemo(() => {
-      return [...childCategories].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+      return childCategories
+        .filter((cat) => cat && typeof cat === 'string' && cat.trim() !== '')
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     }, [childCategories]);
 
     const filteredModelTypes = useMemo(() => {
-      const term = searchTerms.modelType.toLowerCase().trim();
+      const term = (searchTerms.modelType || '').toLowerCase().trim();
       return franchiseModels
-        .filter((type) => type?.toLowerCase().includes(term))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        .filter((type) => {
+          if (!type) return false;
+          return type.toLowerCase().includes(term);
+        })
+        .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()));
     }, [franchiseModels, searchTerms.modelType]);
 
+    // FIXED: Maintain the original order for investment ranges
     const filteredInvestmentRanges = useMemo(() => {
-      const term = searchTerms.investmentRange.toLowerCase();
-      return investmentRanges
-        .filter((range) => range?.toLowerCase().includes(term))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-        .slice(0, 50);
+      const term = (searchTerms.investmentRange || '').toLowerCase();
+      
+      // First filter by search term
+      const filtered = investmentRanges.filter((range) => {
+        if (!range) return false;
+        return range.toLowerCase().includes(term);
+      });
+      
+      // Sort by predefined order, not alphabetically
+      return filtered.sort((a, b) => {
+        const indexA = INVESTMENT_RANGE_ORDER.indexOf(a);
+        const indexB = INVESTMENT_RANGE_ORDER.indexOf(b);
+        
+        // If both are in the predefined order, sort by that order
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        
+        // If only one is in predefined order, put it first
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        // If neither is in predefined order, sort alphabetically
+        return a.toLowerCase().localeCompare(b.toLowerCase());
+      });
     }, [investmentRanges, searchTerms.investmentRange]);
 
     const filteredAreaRequired = useMemo(() => {
-      const term = searchTerms.areaRequired.toLowerCase();
+      const term = (searchTerms.areaRequired || '').toLowerCase();
       return areaRequired
-        .filter((area) => area?.toLowerCase().includes(term))
+        .filter((area) => {
+          if (!area) return false;
+          return area.toLowerCase().includes(term);
+        })
         .slice(0, 50);
     }, [areaRequired, searchTerms.areaRequired]);
 
     const filteredStates = useMemo(() => {
-      const term = searchTerms.state.toLowerCase();
+      const term = (searchTerms.state || '').toLowerCase();
       return states
-        .filter((state) => state?.toLowerCase().includes(term))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .filter((stateItem) => {
+          if (!stateItem) return false;
+          return stateItem.toLowerCase().includes(term);
+        })
+        .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
         .slice(0, 100);
     }, [states, searchTerms.state]);
 
     const filteredDistricts = useMemo(() => {
       if (!filters.state) return [];
-      const term = searchTerms.district.toLowerCase();
+      const term = (searchTerms.district || '').toLowerCase();
       return districts
-        .filter((d) => d?.toLowerCase().includes(term))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .filter((d) => {
+          if (!d) return false;
+          return d.toLowerCase().includes(term);
+        })
+        .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
         .slice(0, 100);
     }, [filters.state, districts, searchTerms.district]);
 
-// const filteredAreaRequired = useMemo(() => {
-//   const term = searchTerms.areaRequired.toLowerCase();
-//   return areaRequired
-//     ?.filter((area) => area?.toLowerCase().includes(term))
-//     .sort((a, b) => {
-//       // Helper to extract numeric value
-//       const extractNumber = (text) => {
-//         if (!text) return 0;
-//         const match = text.match(/\d[\d,]*/g);
-//         if (!match) return 0;
-//         const numbers = match.map((n) => parseFloat(n.replace(/,/g, "")));
-//         return numbers.length === 2
-//           ? (numbers[0] + numbers[1]) / 2
-//           : numbers[0];
-//       };
-//       return extractNumber(a) - extractNumber(b);
-//     })
-//     .slice(0, 100);
-// }, [areaRequired, searchTerms.areaRequired]);
-
-
-
-    const filteredCities = useMemo(() => {
-      if (!filters.district) return [];
-      const term = searchTerms.city.toLowerCase();
-      return cities
-        .filter((c) => c?.toLowerCase().includes(term))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-        .slice(0, 100);
-    }, [filters.district, cities, searchTerms.city]);
+    // const filteredCities = useMemo(() => {
+    //   if (!filters.district) return [];
+    //   const term = (searchTerms.city || '').toLowerCase();
+    //   return cities
+    //     .filter((c) => {
+    //       if (!c) return false;
+    //       return c.toLowerCase().includes(term);
+    //     })
+    //     .sort((a, b) => (a || '').toLowerCase().localeCompare((b || '').toLowerCase()))
+    //     .slice(0, 100);
+    // }, [filters.district, cities, searchTerms.city]);
 
     const scrollToSection = (ref) => {
       if (ref.current) {
@@ -901,8 +939,6 @@ const FilterPanel = React.memo(
                                     </Box>
                                   ) : (
                                     <>
-                                    
-
                                       <RadioGroup
                                         value={filters.city || ""}
                                         onChange={(e) =>
