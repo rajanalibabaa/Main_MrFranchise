@@ -699,7 +699,7 @@ const FilterPanel = React.memo(
 
   <AccordionDetails sx={{ p: 0 }}>
     <Box sx={{ px: 1 }}>
-      <TextField
+      {/* <TextField
         fullWidth
         size="small"
         placeholder="Search area required..."
@@ -711,7 +711,7 @@ const FilterPanel = React.memo(
             <SearchIcon fontSize="small" sx={{ mr: 1, color: "#ff9800" }} />
           ),
         }}
-      />
+      /> */}
 
       <RadioGroup
         value={filters.areaRequired || ""}
@@ -799,7 +799,7 @@ const FilterPanel = React.memo(
           <AccordionDetails sx={{ p: 0 }}>
             <Box sx={{ px: 1 }}>
               {/* 🔍 State Search */}
-              <TextField
+              {/* <TextField
                 fullWidth
                 size="small"
                 placeholder="Search states..."
@@ -814,7 +814,7 @@ const FilterPanel = React.memo(
                     />
                   ),
                 }}
-              />
+              /> */}
 
               {loading ? (
                 <Box sx={{ p: 2 }}>
@@ -871,7 +871,7 @@ const FilterPanel = React.memo(
                             </Box>
                           ) : (
                             <>
-                              <TextField
+                              {/* <TextField
                                 fullWidth
                                 size="small"
                                 placeholder="Search districts..."
@@ -886,7 +886,7 @@ const FilterPanel = React.memo(
                                     />
                                   ),
                                 }}
-                              />
+                              /> */}
 
                               <RadioGroup
                                 value={filters.district || ""}
