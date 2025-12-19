@@ -41,7 +41,7 @@ export const fetchFilteredBrands = createAsyncThunk(
       if (city) params.append('city', city);
       if (investmentRange) params.append('investmentRange', investmentRange);
       if (modelType) params.append('modelType', modelType);
-            if (areaRequired) params.append("areaRequired", areaRequired); // ✅ Fixed areaRequired param
+      if (areaRequired) params.append("areaRequired", areaRequired); // ✅ Fixed areaRequired param
 
       console.log("url :",`${API_BASE_URL}filter/getAllBrandsAndFilter?${params.toString()}`);
       
@@ -223,11 +223,11 @@ const filterBrandSlice = createSlice({
 
 export const { 
   setFilter, 
-  resetFilters, 
+  resetFilters,   
   setPage, 
-  clearError,
+  clearError, 
   toggleBrandLikefilter,
   toggleBrandShortListfilter
 } = filterBrandSlice.actions;
 
-export default filterBrandSlice.reducer;
+export default filterBrandSlice.reducer; 
