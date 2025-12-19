@@ -7,15 +7,20 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
+import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import SearchIcon from "@mui/icons-material/Search";
 import { GetApiCall } from "../../Api/DefaultApi";
 import { api } from "../../Api/api";
 import SuggestionList from "./SuggestionList";
+import { fetchFilteredBrands } from "../../Redux/Slices/FilterBrandSlice";
 
 const Search = ({handleClose}) => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const { pathname } = useLocation();
+  const isBrandViewPage = pathname === "/brandviewpage" || pathname === "/brands";
 
   const [suggestions, setSuggestions] = useState({
     brands: [],
@@ -25,6 +30,7 @@ const Search = ({handleClose}) => {
     categories: [],
   });
 
+  const dispatch = useDispatch();
   // 🔹 Debounce input
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -77,7 +83,15 @@ const Search = ({handleClose}) => {
   );
 
    const handleOnSearch = () => {
-    console.log("search :",query);
+    console.log("isBrandViewPage :",isBrandViewPage);
+    
+    dispatch(
+      fetchFilteredBrands({
+        searchTerm: query,  
+        page: 1,
+        limit: 20,
+      })
+    );
     handleClose(false)
     
   };
